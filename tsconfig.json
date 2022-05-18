@@ -5,7 +5,6 @@
         "strict": true,
         "removeComments": false,
         "preserveConstEnums": true,
-        "outFile": "../../built/local/tsc.js",
         "sourceMap": true,
         "target": "es5",
         "lib": ["dom", "dom.iterable", "esnext"],
@@ -19,8 +18,9 @@
         "isolatedModules": true,
         "noEmit": false,
         "typeRoots": ["./@types", "node_modules/@types"],
-        "types": ["node", "jest"]
+        "types": ["node"],
+        "noImplicitAny": true
     },
-    "include": ["src/**/*.ts", "src/**/*.js", "test/**/*.ts", "test/**/*.js"],
+    "include": ["src/*", "test/*"],
     "exclude": ["node_modules", "**/*.spec.ts"]
 }
