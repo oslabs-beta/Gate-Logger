@@ -9,11 +9,13 @@
  *   This method will only be secure once the endpoints established in the
  *   web app backend are protected.
  */
+require('dotenv').config();
+import mongoose from 'mongoose';
 import { Request, Response, NextFunction } from 'express';
+import ProjectDB from '../models/Project';
 
 export default class AuthVerification {
     // Validates format of API requests
-
     public static endpointValidation(req: Request, res: Response, next: NextFunction) {
         const { project } = req.query;
 
@@ -35,13 +37,24 @@ export default class AuthVerification {
 
         /*
          *
-         *
-         * URI to gate web app must be included (once operational)
+         * gateURI -> domain of our web app server
+         * for development, we'll just use our DB URI
+         * to grab API key
          */
-        const gateURI = '';
-        const dbKey = await fetch(`${gateURI}/auth/${projectID}`).then((data): string =>
-            data.toString()
-        );
+        const gateURI: string = '';
+        let dbKey: string = '';
+
+        if (gateURI) {
+            // this endpoint returns the associated API key
+            dbKey = await fetch(`${gateURI}/auth/${projectID}`)
+                .then((data) => data.json())
+                .then((obj) => obj.key);
+        } else {
+            await mongoose.connect(process.env.mongoURI, async (err: Error, db: any) => {
+                if (err) throw new Error(`Error connecting to DB: ${err}`);
+                dbKey = await ProjectDB.findById(projectID).then((project) => project.apiKey);
+            });
+        }
 
         if (key !== dbKey)
             throw new Error('[Log API] Header log_key incorrect, check key and project ID');
