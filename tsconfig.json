@@ -21,6 +21,6 @@
         "types": ["node"],
         "noImplicitAny": true
     },
-    "include": ["src/*", "test/*"],
+    "include": ["src/**/*.ts", "src/**/*.js", "test/**/*.ts", "test/**/*.js"],
     "exclude": ["node_modules", "**/*.spec.ts"]
 }
