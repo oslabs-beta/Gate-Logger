@@ -1,7 +1,8 @@
 import 'dotenv/config';
-import mongoose from 'mongoose';
 import { Request, Response, NextFunction } from 'express';
-import ProjectDB from '../models/Project';
+
+// gateURI -> domain of our webapp server
+const gateURI = 'localhost:3000';
 
 /*
  *   This class contains express middleware for endpoints with the following format:
@@ -35,14 +36,6 @@ export default class AuthVerification {
         const { log_key: key } = req.headers;
         const { project: projectID } = req.query;
 
-        /*
-         *
-         * gateURI -> domain of our web app server
-         * for development, we'll just use our DB URI
-         * to grab API key
-         */
-        const gateURI = '';
-        const mongoURI: string | undefined = process.env.MONGO_URI;
         let dbKey = '';
 
         if (gateURI) {
@@ -50,12 +43,7 @@ export default class AuthVerification {
             dbKey = await fetch(`${gateURI}/auth/${projectID}`)
                 .then((data) => data.json())
                 .then((obj) => obj.key);
-        } else if (mongoURI) {
-            await mongoose.connect(mongoURI).catch((err) => `Error connecting to DB: ${err}`);
-            dbKey = await ProjectDB.findById(projectID)
-                .then((data) => data.json())
-                .then((project) => project.apiKey);
-        }
+        } else throw new Error(`Webapp backend URI not specified`);
 
         if (key !== dbKey)
             throw new Error('[Log API] Header log_key incorrect, check key and project ID');
