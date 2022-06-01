@@ -1,9 +1,6 @@
 import 'dotenv/config';
 import { Request, Response, NextFunction } from 'express';
 
-// gateURI -> domain of our webapp server
-const gateURI = 'localhost:3000';
-
 /*
  *   This class contains express middleware for endpoints with the following format:
  *       /log?project=[projectID]
@@ -14,10 +11,19 @@ const gateURI = 'localhost:3000';
  *
  *   This method will only be secure once the endpoints established in the
  *   web app backend are protected.
+ *
+ *   Constructor args must include the URI to the webapp,
+ *   during development it is localhost:3000
  */
 export default class AuthVerification {
+    private gateURI: string;
+
+    constructor(gateURI: string) {
+        this.gateURI = gateURI;
+    }
+
     // Validates format of API requests
-    public static endpointValidation(req: Request, res: Response, next: NextFunction) {
+    public endpointValidation(req: Request, res: Response, next: NextFunction) {
         const { project } = req.query;
 
         // simplistic ID validation
@@ -32,15 +38,15 @@ export default class AuthVerification {
     }
 
     // Verifies key provided in header matches key in associated project's entry in DB
-    public static async keyVerification(req: Request, res: Response, next: NextFunction) {
+    public async keyVerification(req: Request, res: Response, next: NextFunction) {
         const { log_key: key } = req.headers;
         const { project: projectID } = req.query;
 
         let dbKey = '';
 
-        if (gateURI) {
+        if (this.gateURI) {
             // this endpoint returns the associated API key
-            dbKey = await fetch(`${gateURI}/auth/${projectID}`)
+            dbKey = await fetch(`${this.gateURI}/auth/${projectID}`)
                 .then((data) => data.json())
                 .then((obj) => obj.key);
         } else throw new Error(`Webapp backend URI not specified`);
