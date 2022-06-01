@@ -1,3 +1,8 @@
+import 'dotenv/config';
+import mongoose from 'mongoose';
+import { Request, Response, NextFunction } from 'express';
+import ProjectDB from '../models/Project';
+
 /*
  *   This class contains express middleware for endpoints with the following format:
  *       /log?project=[projectID]
@@ -9,11 +14,6 @@
  *   This method will only be secure once the endpoints established in the
  *   web app backend are protected.
  */
-require('dotenv').config();
-import mongoose from 'mongoose';
-import { Request, Response, NextFunction } from 'express';
-import ProjectDB from '../models/Project';
-
 export default class AuthVerification {
     // Validates format of API requests
     public static endpointValidation(req: Request, res: Response, next: NextFunction) {
@@ -41,19 +41,20 @@ export default class AuthVerification {
          * for development, we'll just use our DB URI
          * to grab API key
          */
-        const gateURI: string = '';
-        let dbKey: string = '';
+        const gateURI = '';
+        const mongoURI: string | undefined = process.env.MONGO_URI;
+        let dbKey = '';
 
         if (gateURI) {
             // this endpoint returns the associated API key
             dbKey = await fetch(`${gateURI}/auth/${projectID}`)
                 .then((data) => data.json())
                 .then((obj) => obj.key);
-        } else {
-            await mongoose.connect(process.env.mongoURI, async (err: Error, db: any) => {
-                if (err) throw new Error(`Error connecting to DB: ${err}`);
-                dbKey = await ProjectDB.findById(projectID).then((project) => project.apiKey);
-            });
+        } else if (mongoURI) {
+            await mongoose.connect(mongoURI).catch((err) => `Error connecting to DB: ${err}`);
+            dbKey = await ProjectDB.findById(projectID)
+                .then((data) => data.json())
+                .then((project) => project.apiKey);
         }
 
         if (key !== dbKey)
