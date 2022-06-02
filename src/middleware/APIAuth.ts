@@ -18,15 +18,21 @@ import axios from 'axios';
 export default class AuthVerification {
     private gateURI: string;
 
-    constructor(gateURI: string) {
+    // passed in through req.query
+    private projectID: string;
+
+    // passed in through req.headers
+    private logKey: string;
+
+    constructor(gateURI: string, projectID: string, logKey: string) {
         this.gateURI = gateURI;
+        this.projectID = projectID;
+        this.logKey = logKey;
     }
 
     // Validates format of API requests
     // eslint-disable-next-line class-methods-use-this
     public async endpointValidation(req: Request, res: Response, next: NextFunction) {
-        const { project } = req.query;
-
         // if the gate URI responds with a bad status code, throw an error
         await axios(this.gateURI)
             .then((response) => {
@@ -43,7 +49,7 @@ export default class AuthVerification {
             );
         }
         // if project query is missing or the wrong length: ?project=[projectID] is required
-        if (!project || project?.length !== 24)
+        if (!this.projectID || this.projectID?.length !== 24)
             throw new SyntaxError('[Log API] Project ID in endpoint query is missing or invalid');
 
         // if log_key is missing from headers or its length is wrong
@@ -57,14 +63,11 @@ export default class AuthVerification {
 
     // Verifies key provided in header matches key in associated project's entry in DB
     public async keyVerification(req: Request, res: Response, next: NextFunction) {
-        const { log_key: key } = req.headers;
-        const { project: projectID } = req.query;
-
         let dbKey = '';
 
         if (this.gateURI) {
             // this endpoint returns the associated API key
-            dbKey = await axios(`${this.gateURI}/auth/${projectID}`)
+            dbKey = await axios(`${this.gateURI}/auth/${this.projectID}`)
                 .then((data: any) => data?.key)
                 // .then((obj: any): any => obj?.key);
                 .catch(
@@ -72,7 +75,7 @@ export default class AuthVerification {
                 );
         } else throw new Error(`[Log API] Webapp backend URI not specified`);
 
-        if (key !== dbKey)
+        if (this.logKey !== dbKey)
             return res
                 .sendStatus(403)
                 .send(
