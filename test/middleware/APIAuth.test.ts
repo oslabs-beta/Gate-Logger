@@ -6,7 +6,7 @@ import AuthVerification from '../../src/middleware/APIAuth';
 describe('Test API key header verification', () => {
     let mockReq: Partial<Request>;
     let mockRes: Partial<Response>;
-    let mockNext: NextFunction = jest.fn();
+    const mockNext: NextFunction = jest.fn();
     let resObj;
     let resCode: number;
 
@@ -63,12 +63,13 @@ describe('Test API key header verification', () => {
     */
     describe('Logger Request Validation', () => {
         beforeEach(() => {
-            validate = async () =>
+            validate = async () => {
                 await newVerification.endpointValidation(
                     mockReq as Request,
                     mockRes as Response,
                     mockNext as NextFunction
                 );
+            };
         });
 
         /*
@@ -90,7 +91,7 @@ describe('Test API key header verification', () => {
             await expect(validate).not.toThrow('[Log API] Server not running');
         });
 
-        //FAILING
+        // FAILING
         xtest('throws error when provided URL responds with error code', async () => {
             // set gateURI to inproper endpoint to expect a 404 code
             newVerification = new AuthVerification('http://localhost:3000/error');
@@ -155,12 +156,13 @@ describe('Test API key header verification', () => {
     */
     describe('API Key Verification', () => {
         beforeAll(() => {
-            verify = async () =>
+            verify = async () => {
                 await newVerification.keyVerification(
                     mockReq as Request,
                     mockRes as Response,
                     mockNext as NextFunction
                 );
+            };
         });
 
         test('error 403 given when key provided in headers does not match the key in dB', async () => {

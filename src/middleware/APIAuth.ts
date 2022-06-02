@@ -34,7 +34,7 @@ export default class AuthVerification {
                     throw new SyntaxError('[Log API] Invalid Gateway URL provided');
             })
             // throws error if server is not running
-            .catch((err) => new Error('[Log API] Server not running'));
+            .catch((err) => new Error(`[Log API] Server not running ${err}`));
 
         // if endpoint is invalid: /log is required
         if (!req.path || !req.path?.includes('log')) {
@@ -67,8 +67,10 @@ export default class AuthVerification {
             dbKey = await axios(`${this.gateURI}/auth/${projectID}`)
                 .then((data: any) => data?.key)
                 // .then((obj: any): any => obj?.key);
-                .catch((err) => new Error(`Communication error with Gateway backend`));
-        } else throw new Error(`Webapp backend URI not specified`);
+                .catch(
+                    (err) => new Error(`[Log API] Communication error with Gateway backend ${err}`)
+                );
+        } else throw new Error(`[Log API] Webapp backend URI not specified`);
 
         if (key !== dbKey)
             return res
