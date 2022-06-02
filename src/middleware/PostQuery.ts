@@ -8,8 +8,11 @@ import { Request, Response, NextFunction } from 'express';
 export default class PostQuery {
     private gateURI: string;
 
-    constructor(gateURI: string) {
+    private projectID: string;
+
+    constructor(gateURI: string, projectID: string) {
         this.gateURI = gateURI;
+        this.projectID = projectID;
     }
 
     // takes data from res.locals.graphqlGate and posts to webapp backend
@@ -32,7 +35,7 @@ export default class PostQuery {
             complexity,
             depth,
             time,
-            projectID: req.query.project,
+            projectID: this.projectID,
         };
 
         const graphqlQuery = {
