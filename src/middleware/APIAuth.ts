@@ -27,15 +27,23 @@ export default class AuthVerification {
     public endpointValidation(req: Request, res: Response, next: NextFunction) {
         const { project } = req.query;
 
+        // if endpoint is invalid
+        if (!req.path.includes('log')) {
+            throw new SyntaxError(
+                '[Log API] Endpoint in your request is invalid,\nformat must be: /log?project=[projectID]'
+            );
+        }
         // simplistic ID validation
-        if (project?.length !== 24) throw new Error('[Log API] URL invalid, check project ID');
+        if (!project || project?.length !== 24)
+            throw new SyntaxError('[Log API] Project ID in endpoint query is missing or invalid');
 
-        // if endpoint and IDs are valid
-        if (req.path.includes('log') && req.headers.log_key?.length === 10) {
-            return next();
+        // if log_key is missing from headers or its length is wrong
+        if (!req.headers.log_key || req.headers.log_key?.length !== 10) {
+            throw new SyntaxError('[Log API] Log_key header is missing or an incorrect length');
         }
 
-        throw new Error('[Log API] Endpoint and/or log_key header invalid');
+        // when user's format passes all the validation
+        return next();
     }
 
     // Verifies key provided in header matches key in associated project's entry in DB
