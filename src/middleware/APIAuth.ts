@@ -23,6 +23,7 @@ export default class AuthVerification {
     }
 
     // Validates format of API requests
+    // eslint-disable-next-line class-methods-use-this
     public endpointValidation(req: Request, res: Response, next: NextFunction) {
         const { project } = req.query;
 
