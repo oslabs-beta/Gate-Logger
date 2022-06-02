@@ -1,5 +1,5 @@
-import 'dotenv/config';
 import { Request, Response, NextFunction } from 'express';
+import axios from 'axios';
 
 /*
  *   This class contains express middleware for endpoints with the following format:
@@ -24,16 +24,25 @@ export default class AuthVerification {
 
     // Validates format of API requests
     // eslint-disable-next-line class-methods-use-this
-    public endpointValidation(req: Request, res: Response, next: NextFunction) {
+    public async endpointValidation(req: Request, res: Response, next: NextFunction) {
         const { project } = req.query;
 
-        // if endpoint is invalid
-        if (!req.path.includes('log')) {
+        // if the gate URI responds with a bad status code, throw an error
+        await axios(this.gateURI)
+            .then((response) => {
+                if (response.status >= 400)
+                    throw new SyntaxError('[Log API] Invalid Gateway URL provided');
+            })
+            // throws error if server is not running
+            .catch((err) => new Error('[Log API] Server not running'));
+
+        // if endpoint is invalid: /log is required
+        if (!req.path || !req.path?.includes('log')) {
             throw new SyntaxError(
-                '[Log API] Endpoint in your request is invalid,\nformat must be: /log?project=[projectID]'
+                '[Log API] Endpoint in your request is invalid, format must be: /log?project=[projectID]'
             );
         }
-        // simplistic ID validation
+        // if project query is missing or the wrong length: ?project=[projectID] is required
         if (!project || project?.length !== 24)
             throw new SyntaxError('[Log API] Project ID in endpoint query is missing or invalid');
 
@@ -55,13 +64,18 @@ export default class AuthVerification {
 
         if (this.gateURI) {
             // this endpoint returns the associated API key
-            dbKey = await fetch(`${this.gateURI}/auth/${projectID}`)
-                .then((data) => data.json())
-                .then((obj) => obj.key);
+            dbKey = await axios(`${this.gateURI}/auth/${projectID}`)
+                .then((data: any) => data?.key)
+                // .then((obj: any): any => obj?.key);
+                .catch((err) => new Error(`Communication error with Gateway backend`));
         } else throw new Error(`Webapp backend URI not specified`);
 
         if (key !== dbKey)
-            throw new Error('[Log API] Header log_key incorrect, check key and project ID');
+            return res
+                .sendStatus(403)
+                .send(
+                    'The log_key provided in headers does not match the key given for the project specified'
+                );
 
         return next();
     }
