@@ -1,16 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
 import 'jest';
 
 import AuthVerification from '../../src/middleware/APIAuth';
 
 describe('Test API key header verification', () => {
-    let mockReq: Partial<Request>;
-    let mockRes: Partial<Response>;
-    const mockNext: NextFunction = jest.fn();
-
-    let resObj;
-    let resCode: number;
-
     let mockURI: string;
     let mockProjectID: string;
     let mockAPIKeyHeader: string;
@@ -37,27 +29,6 @@ describe('Test API key header verification', () => {
         mockAPIKeyHeader = 'Eo0sVUWQKM';
         mockURI = 'http://localhost:3000';
 
-        mockReq = {
-            query: {
-                project: mockProjectID,
-            },
-            path: `/log`,
-            headers: {
-                log_key: mockAPIKeyHeader,
-            },
-        };
-        mockRes = {
-            json: jest.fn().mockImplementation((result) => {
-                resObj = result;
-            }),
-            send: jest.fn().mockImplementation((result) => {
-                resObj = result;
-            }),
-            sendStatus: jest.fn().mockImplementation((code) => {
-                resCode = code;
-            }),
-        };
-
         newVerification = new AuthVerification(mockURI, mockProjectID, mockAPIKeyHeader);
     });
 
@@ -68,7 +39,9 @@ describe('Test API key header verification', () => {
     */
     describe('Logger Request Validation', () => {
         beforeEach(() => {
-            validate = async () => await newVerification.validation();
+            validate = () => {
+                newVerification.validation();
+            };
         });
 
         /*
@@ -119,8 +92,8 @@ describe('Test API key header verification', () => {
     */
     describe('API Key Verification', () => {
         beforeAll(() => {
-            verify = async () => {
-                await newVerification.verification();
+            verify = () => {
+                newVerification.verification();
             };
         });
 
@@ -128,14 +101,17 @@ describe('Test API key header verification', () => {
             mockAPIKeyHeader = '10kcharact';
             newVerification = new AuthVerification(mockURI, mockProjectID, mockAPIKeyHeader);
 
-            expect(verify).rejects.toThrow(
+            await expect(verify).rejects.toThrow(
                 '[Log API] The log_key provided in header does not match the key of the project specified'
             );
         });
 
-        //
         test('DB key received in fetch is correct length', async () => {
-            expect(verify).rejects.toThrow('[Log API] API key from DB is incorrect length.');
+            await expect(verify).rejects.toThrow('[Log API] API key from DB is incorrect length.');
+        });
+
+        test('no errors when keys match', async () => {
+            await expect(verify).not.toThrow();
         });
     });
 });

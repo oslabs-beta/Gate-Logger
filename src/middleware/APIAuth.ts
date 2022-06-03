@@ -51,9 +51,6 @@ export default class AuthVerification {
                 '[Log API] Log_key header is an incorrect length, must be 10 characters.'
             );
         }
-
-        // when user's formatting passes all the validation
-        return;
     }
 
     // Verifies key provided in header matches key in associated project's entry in DB
@@ -66,7 +63,10 @@ export default class AuthVerification {
             .then((key: any): void => {
                 dbKey = key.data;
             })
-            .catch((err) => new Error(`[Log API] Communication error with Gateway backend ${err}`));
+            .catch(
+                (err: Error): Error =>
+                    new Error(`[Log API] Communication error with Gateway backend ${err}`)
+            );
 
         // if received DB key's length is wrong
         if (dbKey.length !== 10) {
@@ -77,8 +77,5 @@ export default class AuthVerification {
             throw new Error(
                 `[Log API] The log_key provided in header does not match the key of the project specified`
             );
-
-        // once user's API key is verified
-        return;
     }
 }
