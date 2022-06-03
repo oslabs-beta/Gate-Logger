@@ -48,13 +48,15 @@ export default class AuthVerification {
                 '[Log API] Endpoint in your request is invalid, format must be: /log?project=[projectID]'
             );
         }
-        // if project query is missing or the wrong length: ?project=[projectID] is required
-        if (!this.projectID || this.projectID?.length !== 24)
+        // if project query is the wrong length: ?project=[projectID] is required
+        if (this.projectID?.length !== 24)
             throw new SyntaxError('[Log API] Project ID in endpoint query is missing or invalid');
 
-        // if log_key is missing from headers or its length is wrong
-        if (!req.headers.log_key || req.headers.log_key?.length !== 10) {
-            throw new SyntaxError('[Log API] Log_key header is missing or an incorrect length');
+        // if provided log_key length is wrong
+        if (this.logKey?.length !== 10) {
+            throw new SyntaxError(
+                '[Log API] Log_key header is an incorrect length, must be 10 characters.'
+            );
         }
 
         // when user's format passes all the validation
@@ -63,24 +65,23 @@ export default class AuthVerification {
 
     // Verifies key provided in header matches key in associated project's entry in DB
     public async keyVerification(req: Request, res: Response, next: NextFunction) {
-        let dbKey = '';
+        let dbKey: string | Error = '';
 
-        if (this.gateURI) {
-            // this endpoint returns the associated API key
-            dbKey = await axios(`${this.gateURI}/auth/${this.projectID}`)
-                .then((data: any) => data?.key)
-                // .then((obj: any): any => obj?.key);
-                .catch(
-                    (err) => new Error(`[Log API] Communication error with Gateway backend ${err}`)
-                );
-        } else throw new Error(`[Log API] Webapp backend URI not specified`);
+        // this endpoint returns the associated API key
+        await axios(`${this.gateURI}/auth/${this.projectID}`)
+            .then((data: any) => data?.json())
+            .then((obj: any): string => (dbKey = obj?.key))
+            .catch((err) => new Error(`[Log API] Communication error with Gateway backend ${err}`));
 
-        if (this.logKey !== dbKey)
-            return res
-                .sendStatus(403)
-                .send(
-                    'The log_key provided in headers does not match the key given for the project specified'
-                );
+        // if received DB key's length is wrong
+        if (dbKey.length !== 10) {
+            throw new SyntaxError('[Log API] API key from DB is incorrect length.');
+        }
+
+        if (this.logKey !== dbKey) return res.sendStatus(403);
+        // .send(
+        //     'The log_key provided in headers does not match the key given for the project specified'
+        // );
 
         return next();
     }
