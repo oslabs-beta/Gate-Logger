@@ -18,9 +18,9 @@
         "isolatedModules": true,
         "noEmit": false,
         "typeRoots": ["./@types", "node_modules/@types"],
-        "types": ["node"],
+        "types": ["node", "jest"],
         "noImplicitAny": true
     },
-    "include": ["src/**/*.ts", "src/**/*.js", "test/**/*.ts", "test/**/*.js"],
+    "include": ["src/**/*.ts", "src/**/*.js", "test/**/*.ts", "test/**/*.js", "./@types/*"],
     "exclude": ["node_modules", "**/*.spec.ts"]
 }
