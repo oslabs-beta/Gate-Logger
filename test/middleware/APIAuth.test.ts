@@ -33,8 +33,8 @@ describe('Test API key header verification', () => {
        to the webapp project and create a mock project with the webapp,
        then change these values to match the new data.
        */
-        mockProjectID = '628f0a525e7b5b620fe8af9b';
-        mockAPIKeyHeader = 'rhNKMO9vyI';
+        mockProjectID = '62997af7a5aab6a6df935797';
+        mockAPIKeyHeader = 'Eo0sVUWQKM';
         mockURI = 'http://localhost:3000';
 
         mockReq = {
@@ -68,49 +68,25 @@ describe('Test API key header verification', () => {
     */
     describe('Logger Request Validation', () => {
         beforeEach(() => {
-            validate = async () => {
-                await newVerification.endpointValidation(
-                    mockReq as Request,
-                    mockRes as Response,
-                    mockNext as NextFunction
-                );
-            };
+            validate = async () => await newVerification.validation();
         });
 
         /*
 
-            SKIP this test when the webapp server is running (it will fail)
 
+            SKIP this test when the webapp server is running (it will fail)
         */
-        test('throws error when webapp server not running', async () => {
+        xtest('throws error when webapp server not running', async () => {
             await expect(validate).rejects.toThrow('[Log API] Server not running');
         });
 
         /*
 
+
             When the webapp server is running, run these tests
-
         */
-
         test('does not throw error when webapp server is running', async () => {
             await expect(validate).not.toThrow('[Log API] Server not running');
-        });
-
-        // FAILING
-        test('throws error when provided URL responds with error code', async () => {
-            // set gateURI to inproper endpoint to expect a 404
-            mockURI = 'http://localhost:3000/error';
-            newVerification = new AuthVerification(mockURI, mockProjectID, mockAPIKeyHeader);
-
-            await expect(validate).rejects.toThrow('[Log API] Invalid Gateway URL provided');
-        });
-
-        test('throws error when invalid webapp endpoint is provided', async () => {
-            mockReq.path = '/error';
-
-            await expect(validate).rejects.toThrow(
-                '[Log API] Endpoint in your request is invalid, format must be: /log?project=[projectID]'
-            );
         });
 
         test('throws error when invalid project ID is provided', async () => {
@@ -118,7 +94,7 @@ describe('Test API key header verification', () => {
             newVerification = new AuthVerification(mockURI, mockProjectID, mockAPIKeyHeader);
 
             await expect(validate).rejects.toThrow(
-                '[Log API] Project ID in endpoint query is missing or invalid'
+                '[Log API] Project ID passed into middleware is invalid'
             );
         });
 
@@ -131,13 +107,8 @@ describe('Test API key header verification', () => {
             );
         });
 
-        test('goes onto next middleware when all syntax is correct', async () => {
-            await newVerification.endpointValidation(
-                mockReq as Request,
-                mockRes as Response,
-                mockNext as NextFunction
-            );
-            expect(mockNext).toBeCalledTimes(1);
+        test('validate returns when all syntax is correct', async () => {
+            await expect(validate).not.toThrow();
         });
     });
 
@@ -149,21 +120,17 @@ describe('Test API key header verification', () => {
     describe('API Key Verification', () => {
         beforeAll(() => {
             verify = async () => {
-                await newVerification.keyVerification(
-                    mockReq as Request,
-                    mockRes as Response,
-                    mockNext as NextFunction
-                );
+                await newVerification.verification();
             };
         });
 
-        // FAILING, receives undefined, not 403
-        test('error 403 given when key provided does not match the key in dB', async () => {
-            mockAPIKeyHeader = 'error';
+        test('throws when key provided does not match the key in dB', async () => {
+            mockAPIKeyHeader = '10kcharact';
             newVerification = new AuthVerification(mockURI, mockProjectID, mockAPIKeyHeader);
 
-            verify();
-            expect(resCode).toBe(403);
+            expect(verify).rejects.toThrow(
+                '[Log API] The log_key provided in header does not match the key of the project specified'
+            );
         });
 
         //

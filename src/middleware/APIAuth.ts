@@ -1,4 +1,3 @@
-import { Request, Response, NextFunction } from 'express';
 import axios from 'axios';
 
 /*
@@ -32,7 +31,7 @@ export default class AuthVerification {
 
     // Validates format of API requests
     // eslint-disable-next-line class-methods-use-this
-    public async endpointValidation(req: Request, res: Response, next: NextFunction) {
+    public async validation() {
         // if the gate URI responds with a bad status code, throw an error
         await axios(this.gateURI)
             .then((response) => {
@@ -42,15 +41,9 @@ export default class AuthVerification {
             // throws error if server is not running
             .catch((err) => new Error(`[Log API] Server not running ${err}`));
 
-        // if endpoint is invalid: /log is required
-        if (!req.path || !req.path?.includes('log')) {
-            throw new SyntaxError(
-                '[Log API] Endpoint in your request is invalid, format must be: /log?project=[projectID]'
-            );
-        }
         // if project query is the wrong length: ?project=[projectID] is required
         if (this.projectID?.length !== 24)
-            throw new SyntaxError('[Log API] Project ID in endpoint query is missing or invalid');
+            throw new SyntaxError('[Log API] Project ID passed into middleware is invalid');
 
         // if provided log_key length is wrong
         if (this.logKey?.length !== 10) {
@@ -59,19 +52,19 @@ export default class AuthVerification {
             );
         }
 
-        // when user's format passes all the validation
-        return next();
+        // when user's formatting passes all the validation
+        return;
     }
 
     // Verifies key provided in header matches key in associated project's entry in DB
-    public async keyVerification(req: Request, res: Response, next: NextFunction) {
+    public async verification() {
         let dbKey: string | Error = '';
 
-        // this endpoint returns the associated API key
+        // this endpoint returns the associated project's API key
         await axios(`${this.gateURI}/auth/${this.projectID}`)
-            .then((data: any) => data?.json())
-            .then((obj: any): void => {
-                dbKey = obj?.key;
+            // .then((data: any) => data?.json())
+            .then((key: any): void => {
+                dbKey = key.data;
             })
             .catch((err) => new Error(`[Log API] Communication error with Gateway backend ${err}`));
 
@@ -80,11 +73,12 @@ export default class AuthVerification {
             throw new SyntaxError('[Log API] API key from DB is incorrect length.');
         }
 
-        if (this.logKey !== dbKey) return res.sendStatus(403);
-        // .send(
-        //     'The log_key provided in headers does not match the key given for the project specified'
-        // );
+        if (this.logKey !== dbKey)
+            throw new Error(
+                `[Log API] The log_key provided in header does not match the key of the project specified`
+            );
 
-        return next();
+        // once user's API key is verified
+        return;
     }
 }
