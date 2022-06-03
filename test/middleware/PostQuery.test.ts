@@ -23,9 +23,11 @@ describe('Test API key header verification', () => {
         };
     });
 
-    xtest('No error thrown when query data is correct syntax', async () => {
+    test('No error thrown when query data is correct syntax', async () => {
         postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
-        await expect(postQuery.post).not.toThrow();
+        const newPost = () => postQuery.post();
+
+        await expect(newPost).not.toThrow();
     });
 
     test('error throws when query data is incorrect', async () => {
@@ -35,7 +37,8 @@ describe('Test API key header verification', () => {
             tokens: -1,
         };
         postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
+        const newPost = () => postQuery.post();
 
-        await expect(postQuery.post).rejects.toThrow(`[gatelog] Query data cannot be negative.`);
+        await expect(newPost).rejects.toThrow(`[gatelog] Query data cannot be negative.`);
     });
 });
