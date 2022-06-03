@@ -24,6 +24,9 @@ export default class PostQuery {
     public async post() {
         const { complexity, timestamp, tokens } = this.queryData;
 
+        if (complexity || timestamp || tokens < 0)
+            throw new SyntaxError(`[gatelog] Query data cannot be negative.`);
+
         // default until depth is added onto limiter middleware
         const depth = -1;
 

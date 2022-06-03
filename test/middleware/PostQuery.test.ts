@@ -1,9 +1,11 @@
 import 'jest';
+import PostQuery from '../../src/middleware/PostQuery';
 
 describe('Test API key header verification', () => {
     let mockURI: string;
     let mockProjectID: string;
     let mockQueryData: QueryData;
+    let postQuery: PostQuery;
 
     beforeEach(() => {
         /* The mock data below is pulled from a personal development dB.
@@ -21,5 +23,19 @@ describe('Test API key header verification', () => {
         };
     });
 
-    test('');
+    xtest('No error thrown when query data is correct syntax', async () => {
+        postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
+        await expect(postQuery.post).not.toThrow();
+    });
+
+    test('error throws when query data is incorrect', async () => {
+        mockQueryData = {
+            complexity: 3,
+            timestamp: 100,
+            tokens: -1,
+        };
+        postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
+
+        await expect(postQuery.post).rejects.toThrow(`[gatelog] Query data cannot be negative.`);
+    });
 });
