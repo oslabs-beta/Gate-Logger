@@ -4,7 +4,8 @@
     "description": "A backend library to log GraphQL requests based on their depth and complexity.",
     "main": "src/index.ts",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "jest -c ./jest.unit.json",
+        "test:coverage": "jest --coverage -c ./jest.unit.json",
         "lint": "eslint src test",
         "lint:fix": "eslint --fix src test",
         "prettier": "prettier --write .",
