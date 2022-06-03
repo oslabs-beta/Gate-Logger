@@ -70,7 +70,9 @@ export default class AuthVerification {
         // this endpoint returns the associated API key
         await axios(`${this.gateURI}/auth/${this.projectID}`)
             .then((data: any) => data?.json())
-            .then((obj: any): string => (dbKey = obj?.key))
+            .then((obj: any): void => {
+                dbKey = obj?.key;
+            })
             .catch((err) => new Error(`[Log API] Communication error with Gateway backend ${err}`));
 
         // if received DB key's length is wrong
