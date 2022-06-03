@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { print } from 'graphql';
 
 /**
  *  This class will be for handling the transfer of the res.locals.graphqlGate object
