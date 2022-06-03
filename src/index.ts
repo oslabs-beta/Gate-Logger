@@ -49,7 +49,7 @@ export default function gatelog(projectID: string, apiKey: string) {
     return async (req: Request, res: Response, next: NextFunction) => {
         // reassign res.end in order to allow logger functionality before
         // a response is sent back the client
-        //eslint-ignore-next-line arrow-body-style
+        // eslint-disable-next-line arrow-body-style
         res.end = () => {
             // postQuery.post(req, res, next);
             return res;
