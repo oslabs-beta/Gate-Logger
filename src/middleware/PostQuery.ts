@@ -36,6 +36,7 @@ export default class PostQuery {
             complexity,
             depth,
             timestamp,
+            tokens,
             projectID: this.projectID,
         };
 
@@ -60,10 +61,8 @@ export default class PostQuery {
             body: JSON.stringify(graphqlQuery),
         };
 
-        try {
-            await axios(`${this.gateURI}/gql`, options);
-        } catch (error) {
-            return `[gatelog] Error posting query to webapp ${error}`;
-        }
+        await axios(`${this.gateURI}/gql`, options).catch(
+            (err: Error): Error => new Error(`[gatelog] Error posting query to webapp ${err}`)
+        );
     }
 }
