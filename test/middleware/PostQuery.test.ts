@@ -23,13 +23,6 @@ describe('Test API key header verification', () => {
         };
     });
 
-    test('No error thrown when query data is correct syntax', async () => {
-        postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
-        const newPost = () => postQuery.post();
-
-        await expect(newPost).not.toThrow();
-    });
-
     test('error throws when query data is incorrect', async () => {
         mockQueryData = {
             complexity: 3,
@@ -40,5 +33,21 @@ describe('Test API key header verification', () => {
         const newPost = () => postQuery.post();
 
         await expect(newPost).rejects.toThrow(`[gatelog] Query data cannot be negative.`);
+    });
+
+    test('Error thrown when resulting projectID of query does not match the one entered', async () => {
+        postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
+        const newPost = () => postQuery.post();
+
+        await expect(newPost).not.toThrow(
+            `[gatelog] GraphQL error, resulting query's projectID does not match the one entered`
+        );
+    });
+
+    test('No error thrown when query data is correct syntax', async () => {
+        postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
+        const newPost = () => postQuery.post();
+
+        await expect(newPost).not.toThrow();
     });
 });

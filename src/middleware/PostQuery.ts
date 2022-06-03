@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { print } from 'graphql';
 
 /**
  *  This class will be for handling the transfer of the res.locals.graphqlGate object
@@ -30,10 +31,6 @@ export default class PostQuery {
         // default until depth is added onto limiter middleware
         const depth = -1;
 
-        const headers = {
-            'content-type': 'application/json',
-        };
-
         // expecting variables to have projectID, complexity, depth, & timestamp properties
         const variables = {
             complexity,
@@ -43,29 +40,37 @@ export default class PostQuery {
             projectID: this.projectID,
         };
 
-        const graphqlQuery = {
-            operationName: 'CreateProjectQuery',
-            query: `mutation CreateProjectQuery($projectQuery: CreateProjectQueryInput!) {
-                        createProjectQuery(projectQuery: $projectQuery) {
-                            number
-                            projectID
-                            complexity
-                            depth
-                            tokens
-                            timestamp
-                        }
-                    }`,
+        const query = `
+            mutation CreateProjectQuery($projectQuery: CreateProjectQueryInput!) {
+                createProjectQuery(projectQuery: $projectQuery) {
+                    number
+                    projectID
+                    complexity
+                    depth
+                    tokens
+                    timestamp
+                }
+            }
+        `;
+
+        const data = {
+            query,
             variables: { projectQuery: variables },
         };
 
-        const options = {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(graphqlQuery),
-        };
+        const result = await axios
+            .post(`${this.gateURI}/gql`, data)
+            .then((json) => json.data.data.createProjectQuery.projectID)
+            .catch(
+                (err: Error): Error => new Error(`[gatelog] Error posting query to webapp ${err}`)
+            );
 
-        await axios(`${this.gateURI}/gql`, options).catch(
-            (err: Error): Error => new Error(`[gatelog] Error posting query to webapp ${err}`)
-        );
+        //
+        if (result !== this.projectID)
+            throw new Error(
+                `[gatelog] GraphQL error, resulting query's projectID does not match the one entered`
+            );
+
+        return result;
     }
 }
