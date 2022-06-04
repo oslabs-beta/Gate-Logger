@@ -9,18 +9,12 @@ const gateURI = 'http://localhost:3000';
 /**
  * @function gateLog runs along with the helper functions
  * first, authorizes the user's request to post to the webapp
- * using params. This middleware should be called BEFORE the
- * rate-limiting middleware in order to allow the limiter to
- * kill requests that must be blocked, but it also needs to throw
- * an error if the limiter is not setup.
+ * using params. This middleware should be imstantiated after
+ * the rate limiter.
  *
- * Therefore, this middlware should be placed before the limiter
- * e.g. app.use(gatelog(params...))
- *      app.use(gatelimiter(params...))
+ * e.g. app.use(gatelimiter(params...))
+ *      app.use(gatelog(params...))
  *
- * The gate log will be changing the definition of res.end (which is
- * called by res.json and res.send) to include the logger's functionality,
- * as well as the same functionality of res.end.
  *
  * @param projectID points to the user's project in the webapp backend
  *
@@ -46,14 +40,9 @@ export default function gatelog(projectID: string, apiKey: string) {
     // const postQuery = new PostQuery(gateURI, projectID);
 
     // every time a request is processed in the user's backend
+    // eslint-disable-next-line arrow-body-style
     return async (req: Request, res: Response, next: NextFunction) => {
-        // reassign res.end in order to allow logger functionality before
-        // a response is sent back the client
-        // eslint-disable-next-line arrow-body-style
-        res.end = () => {
-            // postQuery.post(req, res, next);
-            return res;
-        };
+        // postQuery.post(req, res, next);
 
         return next();
     };
