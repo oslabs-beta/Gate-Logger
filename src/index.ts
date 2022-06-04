@@ -10,9 +10,10 @@ const gateURI = 'http://localhost:3000';
  * @function gateLog runs along with the helper functions
  * first, authorizes the user's request to post to the webapp
  * using params. This middleware should be called BEFORE the
- * rate-limiting middleware in order to allow the limiter to
- * kill requests that must be blocked, but it also needs to throw
- * an error if the limiter is not setup.
+ * rate-limiting middleware in order to log blocked requests &
+ * allow the limiter to kill requests that must be blocked,
+ * but it also needs to throw an error if the limiter is not setup.
+ *
  *
  * Therefore, this middlware should be placed before the limiter
  * e.g. app.use(gatelog(params...))
