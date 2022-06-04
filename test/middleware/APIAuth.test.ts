@@ -2,6 +2,16 @@ import 'jest';
 
 import AuthVerification from '../../src/middleware/APIAuth';
 
+/* The mock data below is pulled from a personal development dB.
+
+    To perform some of these tests yourself, you must connect your dB
+    to the webapp project and create a mock project with the webapp,
+    then change these values to match the new data.
+*/
+const MOCK_PROJECT_ID = '62997af7a5aab6a6df935797';
+const MOCK_API_KEY = 'Eo0sVUWQKM';
+const MOCK_URI = 'http://localhost:3000';
+
 describe('Test API key header verification', () => {
     let mockURI: string;
     let mockProjectID: string;
@@ -19,15 +29,9 @@ describe('Test API key header verification', () => {
        by default, all of this mock data will have correct syntax
        */
     beforeEach(() => {
-        /* The mock data below is pulled from a personal development dB.
-
-       To perform some of these tests yourself, you must connect your dB
-       to the webapp project and create a mock project with the webapp,
-       then change these values to match the new data.
-       */
-        mockProjectID = '62997af7a5aab6a6df935797';
-        mockAPIKeyHeader = 'Eo0sVUWQKM';
-        mockURI = 'http://localhost:3000';
+        mockProjectID = MOCK_PROJECT_ID;
+        mockAPIKeyHeader = MOCK_API_KEY;
+        mockURI = MOCK_URI;
 
         newVerification = new AuthVerification(mockURI, mockProjectID, mockAPIKeyHeader);
     });
