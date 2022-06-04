@@ -9,7 +9,7 @@ const gateURI = 'http://localhost:3000';
 /**
  * @function gateLog runs along with the helper functions
  * first, authorizes the user's request to post to the webapp
- * using params. This middleware should be imstantiated after
+ * using params. This middleware should be imstantiated below
  * the rate limiter.
  *
  * e.g. app.use(gatelimiter(params...))
