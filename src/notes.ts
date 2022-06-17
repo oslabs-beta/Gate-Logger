@@ -2,6 +2,8 @@
 
 // throw an error if res.locals.graphqlGate
 
+// wrapper around limiter?
+
 // app.use(logger(PROJECT, key))
 
 // logger func: save query
