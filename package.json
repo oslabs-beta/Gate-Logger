@@ -24,6 +24,7 @@
     "dependencies": {
         "axios": "^0.27.2",
         "express": "^4.18.1",
+        "graphql": "^16.5.0",
         "mongoose": "^6.3.5"
     },
     "devDependencies": {
@@ -49,10 +50,5 @@
     "lint-staged": {
         "*.{js, ts}": "eslint --cache --fix",
         "*.{js,ts,css,md}": "prettier --write --ignore-unknown"
-    },
-    "dependencies": {
-        "axios": "^0.27.2",
-        "express": "^4.18.1",
-        "graphql": "^16.5.0"
     }
 }
