@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
-// import AuthVerification from './middleware/AuthVerification';
-// import PostQuery from './middleware/PostQuery';
+import AuthVerification from './middleware/APIAuth';
+import PostQuery from './middleware/PostQuery';
 
 // URI pointing to the visual webapp
 const gateURI = 'http://localhost:3000';
@@ -30,29 +30,31 @@ const gateURI = 'http://localhost:3000';
  *
  */
 // instantation, everything before the return callback runs only once
-export default function gatelog(projectID: string, apiKey: string) {
-    // const newAuth = new AuthVerification(gateURI, projectID, apiKey);
+export default async function gatelog(projectID: string, apiKey: string) {
+    const newAuth = new AuthVerification(gateURI, projectID, apiKey);
 
-    // const validate = newAuth.endpointValidation(req, res, next);
-    // const verify = newAuth.keyVerification(req, res, next);
+    const validate = newAuth.validation;
+    const verify = newAuth.verification;
 
     // run the API Key verification process when gateLogger is instantiated
     try {
-        // await validate();
-        // await verify();
+        await validate();
+        await verify();
     } catch (err) {
         return err;
     }
 
-    // const postQuery = new PostQuery(gateURI, projectID);
-
-    // every time a request is processed in the user's backend
+    // every time a request is processed in the user's backend,
+    // this express middleware callback will run
     return async (req: Request, res: Response, next: NextFunction) => {
+        const postQuery = new PostQuery(gateURI, projectID, res.locals.graphqlGate);
+
         // reassign res.end in order to allow logger functionality before
         // a response is sent back the client
+
         // eslint-disable-next-line arrow-body-style
         res.end = () => {
-            // postQuery.post(req, res, next);
+            postQuery.post();
             return res;
         };
 
