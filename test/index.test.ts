@@ -1,7 +1,17 @@
 import 'jest';
+import request from 'supertest';
+import express from 'express';
+import axios from 'axios';
 
-const MOCK_PROJECT_ID: string = '62997af7a5aab6a6df935797';
-const MOCK_API_KEY: string = 'Eo0sVUWQKM';
+import gatelog from '../src/index';
+
+/**
+ *
+ * MOCK CONSTANTS
+ *
+ */
+const MOCK_PROJECT_ID = '62997af7a5aab6a6df935797';
+const MOCK_API_KEY = 'Eo0sVUWQKM';
 
 const MOCK_QUERY_DATA: QueryData = {
     timestamp: 0, // unix timestamp
@@ -10,71 +20,47 @@ const MOCK_QUERY_DATA: QueryData = {
     success: true,
 };
 
-// models the NoSQL database used by the webapp backend
-const MOCK_DB = {
-    Users: [
-        {
-            id: '62997adfa5aab6a6df935792',
-            email: '1',
-        },
-        {
-            id: '62997adfa5aab6a6df935793',
-            email: '2',
-        },
-    ],
-    Projects: [
-        {
-            id: '62997af7a5aab6a6df935797',
-            userID: '62997adfa5aab6a6df935792',
-            name: '1',
-            apiKey: 'Eo0sVUWQKM',
-        },
-        {
-            id: '62997af7a5aab6a6df935798',
-            userID: '62997adfa5aab6a6df935793',
-            name: '2',
-            apiKey: 'Eo0sVUWQKN',
-        },
-    ],
-    Queries: [
-        // query that has been allowed through by the limiter
-        {
-            id: '6299a2cd859e4b82bda9aad9',
-            userID: '62997af7a5aab6a6df935797',
-            projectID: '62997adfa5aab6a6df935792',
-            number: 1,
-            depth: 0,
-            complexity: 0,
-            timestamp: 0,
-            tokens: 0,
-            success: true,
-        },
-        // same data, but this query has been blocked by the limiter
-        {
-            id: '6299a3aee9ed2aa5e4d33db4',
-            userID: '62997af7a5aab6a6df935797',
-            projectID: '62997adfa5aab6a6df935792',
-            number: 1,
-            depth: 0,
-            complexity: 0,
-            timestamp: 0,
-            tokens: 0,
-            success: false,
-        },
-    ],
-};
-
+/**
+ *
+ * TESTING SUITE
+ *
+ */
 describe('Logger End to End Test', () => {
-    let mockProjectID: string;
-    let mockAPIKey: string;
-    let mockQueryData: QueryData;
+    describe('with successful query', () => {
+        const app = express();
+        beforeEach(() => {
+            // logger middleware instantiation
+            app.use(gatelog(MOCK_PROJECT_ID, MOCK_API_KEY));
 
-    beforeEach(() => {
-        mockProjectID = MOCK_PROJECT_ID;
-        mockAPIKey = MOCK_API_KEY;
-        mockQueryData = MOCK_QUERY_DATA;
+            // mocking limiter middleware (to set res.locals.graphQLGate)
+            // this is in the case that a query goes through successfully
+            app.use((req, res, next) => {
+                res.locals.graphQLGate = MOCK_QUERY_DATA;
+                return next();
+            });
+
+            // halt request at end of middleware chain
+            app.use((req, res, next) => {
+                console.log('end ', res.end);
+                console.log('send ', res.send);
+
+                /**
+                 * in theory, this res.send() should be calling not only res.end, but
+                 * also the functionality added to res.end by the logger middleware
+                 * upon its instantiation
+                 */
+
+                return res.send('done');
+            });
+        });
+
+        // tests that the data is posted to the webapp's backend
+        // web server must be running to pass
+
+        xtest('Correct data is posted to webapp when allowed by limiter', async () => {
+            const res = await request(app).get('/');
+
+            expect(res.statusCode).toEqual(200);
+        });
     });
-
-    // test that the data is sent when a query is allowed by the limiter
-    xtest('', () => {});
 });

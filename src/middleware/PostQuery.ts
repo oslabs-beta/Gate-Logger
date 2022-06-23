@@ -24,13 +24,13 @@ export default class PostQuery {
     public async post() {
         const { complexity, timestamp, tokens, success } = this.queryData;
 
+        // possibly redundant, but just to mak sure no weird errors are occurring
         if (complexity < 0 || timestamp < 0 || tokens < 0)
             throw new SyntaxError(`[gatelog] Query data cannot be negative.`);
 
-        // default until depth is added onto limiter middleware
+        // TEMP: default is -1 until depth is added onto limiter middleware
         const depth = -1;
 
-        // expecting variables to have projectID, complexity, depth, & timestamp properties
         const variables = {
             projectID: this.projectID,
             complexity,
@@ -40,6 +40,7 @@ export default class PostQuery {
             timestamp,
         };
 
+        // graphQL query
         const query = `
             mutation CreateProjectQuery($projectQuery: CreateProjectQueryInput!) {
                 createProjectQuery(projectQuery: $projectQuery) {
@@ -59,6 +60,7 @@ export default class PostQuery {
             variables: { projectQuery: variables },
         };
 
+        // axios post request to the webapp's backend
         const result = await axios
             .post(`${this.gateURI}/gql`, data)
             .then((json) => json.data.data.createProjectQuery.projectID)

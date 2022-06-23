@@ -7,7 +7,7 @@ import PostQuery from './middleware/PostQuery';
 const gateURI = 'http://localhost:3000';
 
 /**
- * @function gateLog runs along with the helper functions
+ * @function gatelog runs along with the helper functions
  * first, authorizes the user's request to post to the webapp
  * using params. This middleware should be called BEFORE the
  * rate-limiting middleware in order to log blocked requests &
@@ -29,32 +29,30 @@ const gateURI = 'http://localhost:3000';
  *               to the webapp's backend
  *
  */
+
 // instantation, everything before the return callback runs only once
-export default async function gatelog(projectID: string, apiKey: string) {
+export default function gatelog(projectID: string, apiKey: string) {
     const newAuth = new AuthVerification(gateURI, projectID, apiKey);
 
     const validate = newAuth.validation;
     const verify = newAuth.verification;
 
-    // run the API Key verification process when gateLogger is instantiated
-    try {
-        await validate();
-        await verify();
-    } catch (err) {
-        return err;
-    }
+    // run the API Key verification process when gatelog is instantiated
+    validate().catch((err) => err);
+    verify().catch((err) => err);
 
     // every time a request is processed in the user's backend,
     // this express middleware callback will run
-    return async (req: Request, res: Response, next: NextFunction) => {
-        const postQuery = new PostQuery(gateURI, projectID, res.locals.graphqlGate);
-
+    return (req: Request, res: Response, next: NextFunction) => {
         // reassign res.end in order to allow logger functionality before
         // a response is sent back the client
         const temp = res.end;
 
         // eslint-disable-next-line arrow-body-style
         res.end = () => {
+            // instantiates PostQuery object with passed in query data from limiter middleware
+            const postQuery = new PostQuery(gateURI, projectID, res.locals.graphqlGate);
+
             // our logger middleware functionality
             postQuery.post();
 
