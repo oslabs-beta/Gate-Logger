@@ -4,5 +4,5 @@ type QueryData = {
     // depth: number;
     timestamp: number;
     tokens: number;
-    blocked: boolean;
+    success: boolean;
 };

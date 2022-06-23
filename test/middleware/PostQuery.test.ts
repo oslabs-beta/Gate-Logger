@@ -20,6 +20,7 @@ describe('Test API key header verification', () => {
             complexity: 4,
             timestamp: Date.now(),
             tokens: 8,
+            success: true,
         };
     });
 
@@ -28,6 +29,7 @@ describe('Test API key header verification', () => {
             complexity: 3,
             timestamp: 100,
             tokens: -1,
+            success: true,
         };
         postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
         const newPost = () => postQuery.post();

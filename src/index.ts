@@ -51,11 +51,15 @@ export default async function gatelog(projectID: string, apiKey: string) {
 
         // reassign res.end in order to allow logger functionality before
         // a response is sent back the client
+        const temp = res.end;
 
         // eslint-disable-next-line arrow-body-style
         res.end = () => {
+            // our logger middleware functionality
             postQuery.post();
-            return res;
+
+            // our temp variable holding node's res.end definition
+            return temp();
         };
 
         return next();

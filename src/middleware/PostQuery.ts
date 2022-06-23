@@ -22,7 +22,7 @@ export default class PostQuery {
 
     // takes data from res.locals.graphqlGate and posts to webapp backend
     public async post() {
-        const { complexity, timestamp, tokens, blocked } = this.queryData;
+        const { complexity, timestamp, tokens, success } = this.queryData;
 
         if (complexity < 0 || timestamp < 0 || tokens < 0)
             throw new SyntaxError(`[gatelog] Query data cannot be negative.`);
@@ -36,7 +36,7 @@ export default class PostQuery {
             complexity,
             depth,
             tokens,
-            blocked,
+            success,
             timestamp,
         };
 
@@ -48,7 +48,7 @@ export default class PostQuery {
                     complexity
                     depth
                     tokens
-                    blocked
+                    success
                     timestamp
                 }
             }
