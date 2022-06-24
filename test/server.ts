@@ -20,7 +20,7 @@ app.use(gatelog(MOCK_PROJECT_ID, MOCK_API_KEY));
 // mocking limiter middleware (to set res.locals.graphQLGate)
 // this is in the case that a query goes through successfully
 app.use((req, res, next) => {
-    console.log('executed');
+    // console.log('executed');
     res.locals.graphQLGate = MOCK_QUERY_DATA;
     return next();
 });

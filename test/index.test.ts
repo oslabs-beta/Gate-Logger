@@ -3,6 +3,13 @@ import request from 'supertest';
 
 import app from './server';
 
+const MOCK_QUERY_DATA: QueryData = {
+    timestamp: 0, // unix timestamp
+    complexity: 0, // query cost
+    tokens: 0, // tokens remaining
+    success: true,
+};
+
 /**
  *
  * TESTING SUITE
@@ -20,8 +27,9 @@ describe('Logger End to End Test', () => {
                     if (err) {
                         return err;
                     }
+                    expect(err).toBe(null);
                     expect(res.statusCode).toEqual(200);
-                    return res;
+                    expect(res.body).toEqual('done');
                 });
         });
     });
