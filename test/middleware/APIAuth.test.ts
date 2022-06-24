@@ -12,7 +12,7 @@ const MOCK_PROJECT_ID = '62997af7a5aab6a6df935797';
 const MOCK_API_KEY = 'Eo0sVUWQKM';
 const MOCK_URI = 'http://localhost:3000';
 
-describe('Test API key header verification', () => {
+xdescribe('Test API key header verification', () => {
     let mockURI: string;
     let mockProjectID: string;
     let mockAPIKeyHeader: string;

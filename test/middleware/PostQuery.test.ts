@@ -1,7 +1,7 @@
 import 'jest';
 import PostQuery from '../../src/middleware/PostQuery';
 
-describe('Test API key header verification', () => {
+xdescribe('Test API key header verification', () => {
     let mockURI: string;
     let mockProjectID: string;
     let mockQueryData: QueryData;
