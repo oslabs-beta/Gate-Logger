@@ -3,11 +3,9 @@ import request from 'supertest';
 
 import app from './server';
 
-const MOCK_QUERY_DATA: QueryData = {
-    timestamp: 0, // unix timestamp
-    complexity: 0, // query cost
-    tokens: 0, // tokens remaining
-    success: true,
+// designed to mock the axios request made to the webapp to post a new query
+const mockAxios = {
+    post: jest.fn(() => Promise.resolve({ data: {} })),
 };
 
 /**
@@ -16,21 +14,31 @@ const MOCK_QUERY_DATA: QueryData = {
  *
  */
 describe('Logger End to End Test', () => {
+    console.log('running logger e2e test');
     describe('successful query', () => {
+        console.log('running successful query');
         // tests that the data is posted to the webapp's backend
         // web server must be running to pass
 
-        test('Correct data is posted to webapp when allowed by limiter', () => {
+        test('Correct data is posted to webapp when allowed by limiter', (done) => {
+            console.log('running supertest');
             request(app)
                 .get('/')
+                .expect(200)
                 .end((err, res) => {
                     if (err) {
                         return err;
                     }
-                    expect(err).toBe(null);
-                    expect(res.statusCode).toEqual(200);
-                    expect(res.body).toEqual('done');
+                    done();
+                    // expect no error
+                    // expect(err).toBe(null);
+                    // expect working status code
+                    // expect(res.statusCode).toEqual(200);
+                    // expect(res.body).toEqual('done');
                 });
+
+            // request(app).get('/').expect(200).end();
+            // expect(res.statusCode).toEqual(200);
         });
     });
 });

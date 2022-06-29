@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Request, Response, NextFunction } from 'express';
 
 import AuthVerification from './middleware/APIAuth';
@@ -47,19 +48,24 @@ export default function gatelog(projectID: string, apiKey: string) {
         // reassign res.end in order to allow logger functionality before
         // a response is sent back the client
         const temp = res.end;
-
+        // temp.bind(res);
         // eslint-disable-next-line arrow-body-style
-        res.end = () => {
+        res.end = (arg1, arg2, arg3) => {
             // instantiates PostQuery object with passed in query data from limiter middleware
             const postQuery = new PostQuery(gateURI, projectID, res.locals.graphqlGate);
 
             // our logger middleware functionality
-            postQuery.post();
+            // try {
+            //     await postQuery.post();
+            // } catch (err) {
+            //     if (err) console.log(err);
+            // }
 
             // our temp variable holding node's res.end definition
-            return temp();
+            return temp.call(this, arg1, arg2, arg3);
         };
 
+        // return temp();
         return next();
     };
 }
