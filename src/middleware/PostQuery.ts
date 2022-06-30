@@ -25,7 +25,7 @@ export default class PostQuery {
     public async post(): Promise<void | Error> {
         const { complexity, timestamp, tokens, success } = this.queryData;
 
-        // possibly redundant, but just to mak sure no weird errors are occurring
+        // most likely redundant, merely in place to fight possible edge cases
         if (complexity < 0 || timestamp < 0 || tokens < 0)
             throw new SyntaxError(`[gatelog] Query data cannot be negative.`);
 
@@ -65,7 +65,7 @@ export default class PostQuery {
         // axios post request to the webapp's backend
         const result = await axios
             .post(`${this.gateURI}/gql`, data)
-            .then((json) => json.data.data.createProjectQuery.projectID)
+            .then((json) => json.data.data.createProjectQuery)
             .catch(
                 (err: Error): Error =>
                     new Error(
@@ -74,13 +74,12 @@ export default class PostQuery {
             );
 
         // check in place to make sure query is posted to the correct project
-        if (result !== this.projectID)
+        if (result.projectID !== this.projectID)
             throw new Error(
-                `[gatelog] GraphQL error, resulting query's projectID does not match the one entered`
+                `[gatelog] GraphQL error, resulting query's projectID does not match the ID entered`
             );
 
-        // console.log('post query done');
-
+        // returns project query object
         return result;
     }
 }
