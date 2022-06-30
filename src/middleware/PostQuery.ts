@@ -1,13 +1,5 @@
 import axios from 'axios';
-
-type QueryData = {
-    complexity: number;
-    // removed depth until functionality is added into limiter
-    // depth: number;
-    timestamp: number;
-    tokens: number;
-    success: boolean;
-};
+import { QueryData } from '../../@types/log';
 
 /**
  *  This class will be for handling the transfer of the res.locals.graphqlGate object
@@ -37,52 +29,58 @@ export default class PostQuery {
         if (complexity < 0 || timestamp < 0 || tokens < 0)
             throw new SyntaxError(`[gatelog] Query data cannot be negative.`);
 
-        // TEMP: default is -1 until depth is added onto limiter middleware
-        const depth = -1;
+        // TEMP: default is 0 until depth is added onto limiter middleware
+        const depth = 0;
 
         const variables = {
-            projectID: this.projectID,
-            complexity,
-            depth,
-            tokens,
-            success,
-            timestamp,
+            projectQuery: {
+                projectID: this.projectID,
+                complexity,
+                depth,
+                tokens,
+                success,
+                timestamp,
+            },
         };
 
         // graphQL query
-        const query: string = `
+        const query = `
             mutation CreateProjectQuery($projectQuery: CreateProjectQueryInput!) {
                 createProjectQuery(projectQuery: $projectQuery) {
-                    number
                     projectID
                     complexity
                     depth
                     tokens
-                    success
                     timestamp
+                    success
                 }
             }
         `;
 
         const data = {
             query,
-            variables: { projectQuery: variables },
+            variables,
         };
 
         // axios post request to the webapp's backend
-        // const result = await axios
-        //     .post(`${this.gateURI}/gql`, data)
-        //     .then((json) => json.data.data.createProjectQuery.projectID)
-        //     .catch(
-        //         (err: Error): Error => new Error(`[gatelog] Error posting query to webapp ${err}`)
-        //     );
+        const result = await axios
+            .post(`${this.gateURI}/gql`, data)
+            .then((json) => json.data.data.createProjectQuery.projectID)
+            .catch(
+                (err: Error): Error =>
+                    new Error(
+                        `[gatelog] Error posting project query\n${JSON.stringify(err, null, 2)}`
+                    )
+            );
 
         // check in place to make sure query is posted to the correct project
-        // if (result !== this.projectID)
-        //     throw new Error(
-        //         `[gatelog] GraphQL error, resulting query's projectID does not match the one entered`
-        //     );
+        if (result !== this.projectID)
+            throw new Error(
+                `[gatelog] GraphQL error, resulting query's projectID does not match the one entered`
+            );
 
-        // return result;
+        // console.log('post query done');
+
+        return result;
     }
 }

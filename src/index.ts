@@ -44,28 +44,16 @@ export default function gatelog(projectID: string, apiKey: string) {
 
     // every time a request is processed in the user's backend,
     // this express middleware callback will run
-    return (req: Request, res: Response, next: NextFunction) => {
-        // reassign res.end in order to allow logger functionality before
-        // a response is sent back the client
-        const temp = res.end;
-        // temp.bind(res);
-        // eslint-disable-next-line arrow-body-style
-        res.end = (arg1, arg2, arg3) => {
-            // instantiates PostQuery object with passed in query data from limiter middleware
+    return (req: Request, res: Response, next: NextFunction): NextFunction => {
+        // runs logger's functionality upon response being sent back to client
+        res.on('finish', async () => {
             const postQuery = new PostQuery(gateURI, projectID, res.locals.graphqlGate);
 
-            // our logger middleware functionality
-            // try {
-            //     await postQuery.post();
-            // } catch (err) {
-            //     if (err) console.log(err);
-            // }
+            await postQuery
+                .post()
+                .catch((err) => console.log(`postQuery.post threw an error: ${err}`));
+        });
 
-            // our temp variable holding node's res.end definition
-            return temp.call(this, arg1, arg2, arg3);
-        };
-
-        // return temp();
         return next();
     };
 }

@@ -4,8 +4,8 @@ import express from 'express';
 
 import gatelog from '../src/index';
 
-const MOCK_PROJECT_ID = '62997af7a5aab6a6df935797';
-const MOCK_API_KEY = 'Eo0sVUWQKM';
+const MOCK_PROJECT_ID = '62bd14253f9bee60f2922c42';
+const MOCK_API_KEY = '6bxwViAIla';
 
 const MOCK_QUERY_DATA = {
     timestamp: 0, // unix timestamp
@@ -35,9 +35,11 @@ app.get('/', (req, res, next) => {
      * also the functionality added to res.end by the logger middleware
      * upon its instantiation
      */
+    console.log('response sent');
     return res.send('done');
 });
 
+// for manual middleware tests
 app.listen(3001, () => {
     console.log('test server running');
 });

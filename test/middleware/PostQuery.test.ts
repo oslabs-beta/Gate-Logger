@@ -1,5 +1,6 @@
 import 'jest';
 import PostQuery from '../../src/middleware/PostQuery';
+import { QueryData } from '../../@types/log';
 
 xdescribe('Test API key header verification', () => {
     let mockURI: string;

@@ -25,16 +25,12 @@ describe('Logger End to End Test', () => {
             request(app)
                 .get('/')
                 .expect(200)
+                .expect('done')
                 .end((err, res) => {
                     if (err) {
                         return err;
                     }
                     done();
-                    // expect no error
-                    // expect(err).toBe(null);
-                    // expect working status code
-                    // expect(res.statusCode).toEqual(200);
-                    // expect(res.body).toEqual('done');
                 });
 
             // request(app).get('/').expect(200).end();
