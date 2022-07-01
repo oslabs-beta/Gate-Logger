@@ -1,7 +1,5 @@
 import express from 'express';
 
-// import QueryData from '../@types/log.d';
-
 import gatelog from '../src/index';
 
 const MOCK_PROJECT_ID = '62bd14253f9bee60f2922c42';
@@ -40,8 +38,8 @@ app.get('/', (req, res, next) => {
 });
 
 // for manual middleware tests
-app.listen(3001, () => {
-    console.log('test server running');
-});
+// app.listen(3001, () => {
+//     console.log('test server running');
+// });
 
 export default app;

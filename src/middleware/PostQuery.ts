@@ -23,7 +23,8 @@ export default class PostQuery {
 
     // takes data from res.locals.graphqlGate and posts to webapp backend
     public async post(): Promise<void | Error> {
-        const { complexity, timestamp, tokens, success } = this.queryData;
+        const { /*depth,*/ complexity, tokens, success, timestamp, logged_on, latency } =
+            this.queryData;
 
         // most likely redundant, merely in place to fight possible edge cases
         if (complexity < 0 || timestamp < 0 || tokens < 0)
@@ -40,6 +41,8 @@ export default class PostQuery {
                 tokens,
                 success,
                 timestamp,
+                logged_on,
+                latency,
             },
         };
 
@@ -51,8 +54,10 @@ export default class PostQuery {
                     complexity
                     depth
                     tokens
-                    timestamp
                     success
+                    timestamp
+                    logged_on
+                    latency
                 }
             }
         `;
@@ -74,10 +79,12 @@ export default class PostQuery {
             );
 
         // check in place to make sure query is posted to the correct project
-        if (result.projectID !== this.projectID)
-            throw new Error(
-                `[gatelog] GraphQL error, resulting query's projectID does not match the ID entered`
-            );
+        // if (result.projectID !== this.projectID)
+        //     throw new Error(
+        //         `[gatelog] GraphQL error, resulting query's projectID does not match the ID entered`
+        //     );
+
+        console.log(result);
 
         // returns project query object
         return result;
