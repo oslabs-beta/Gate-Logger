@@ -23,15 +23,15 @@ export default class PostQuery {
 
     // takes data from res.locals.graphqlGate and posts to webapp backend
     public async post(): Promise<void | Error> {
-        const { /*depth,*/ complexity, tokens, success, timestamp, logged_on, latency } =
-            this.queryData;
+        // needs depth property once added into limiter functionality
+        const { complexity, tokens, success, timestamp, loggedOn, latency } = this.queryData;
 
         // most likely redundant, merely in place to fight possible edge cases
         if (complexity < 0 || timestamp < 0 || tokens < 0)
             throw new SyntaxError(`[gatelog] Query data cannot be negative.`);
 
-        // TEMP: default is 0 until depth is added onto limiter middleware
-        const depth = 0;
+        // TEMP: depth is random until added onto limiter middleware
+        const depth = Math.round(Math.random() * 10);
 
         const variables = {
             projectQuery: {
@@ -41,7 +41,7 @@ export default class PostQuery {
                 tokens,
                 success,
                 timestamp,
-                logged_on,
+                loggedOn,
                 latency,
             },
         };
@@ -56,7 +56,7 @@ export default class PostQuery {
                     tokens
                     success
                     timestamp
-                    logged_on
+                    loggedOn
                     latency
                 }
             }
@@ -79,12 +79,10 @@ export default class PostQuery {
             );
 
         // check in place to make sure query is posted to the correct project
-        // if (result.projectID !== this.projectID)
-        //     throw new Error(
-        //         `[gatelog] GraphQL error, resulting query's projectID does not match the ID entered`
-        //     );
-
-        console.log(result);
+        if (result.projectID !== this.projectID)
+            throw new Error(
+                `[gatelog] GraphQL error, resulting query's projectID does not match the ID entered`
+            );
 
         // returns project query object
         return result;

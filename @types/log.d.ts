@@ -5,6 +5,6 @@ export type QueryData = {
     tokens: number;
     success: boolean;
     timestamp: number;
-    logged_on?: number;
+    loggedOn: number;
     latency?: number;
 };

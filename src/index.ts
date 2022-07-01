@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Request, Response, NextFunction } from 'express';
 
 import AuthVerification from './middleware/APIAuth';
@@ -44,25 +43,24 @@ export default function gatelog(projectID: string, apiKey: string) {
 
     // every time a request is processed in the user's backend,
     // this express middleware callback will run
-    return (req: Request, res: Response, next: NextFunction): NextFunction => {
+    return (req: Request, res: Response, next: NextFunction) => {
         // calls initial timestamp of request's beginning,
         // this will depend on where logger is placed in middleware chain
         const timestamp: number = new Date().valueOf();
 
         // runs logger's functionality upon response being sent back to client
-        res.on('finish', async (): void => {
+        res.on('finish', async (): Promise<void> => {
             // calls timestamp of request's end
-            const logged_on: number = new Date().valueOf();
+            const loggedOn: number = new Date().valueOf();
 
             // stores time between request's beginning and end
-            // const latency: number = parseInt((logged_on - timestamp).toString());
-            const latency: number = logged_on - timestamp;
+            const latency: number = loggedOn - timestamp;
 
-            // passes into PostQuery class all query data along with recorded timestamp, logged_on, and latency
+            // passes into PostQuery class all query data along with recorded timestamp, loggedOn, and latency
             const postQuery = new PostQuery(gateURI, projectID, {
                 ...res.locals.graphqlGate,
                 timestamp,
-                logged_on,
+                loggedOn,
                 latency,
             });
 

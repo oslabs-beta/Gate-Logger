@@ -25,7 +25,7 @@ describe('Logger End to End Test', () => {
                     if (err) {
                         return err;
                     }
-                    done();
+                    return done();
                 });
         });
     });

@@ -22,6 +22,7 @@ xdescribe('Test API key header verification', () => {
             timestamp: Date.now(),
             tokens: 8,
             success: true,
+            loggedOn: 0,
         };
     });
 
@@ -31,6 +32,7 @@ xdescribe('Test API key header verification', () => {
             timestamp: 100,
             tokens: -1,
             success: true,
+            loggedOn: 0,
         };
         postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
         const newPost = () => postQuery.post();
