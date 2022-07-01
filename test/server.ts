@@ -24,15 +24,12 @@ app.use((req, res, next) => {
     return next();
 });
 
-// halt request at end of middleware chain
-app.get('/', (req, res, next) => {
-    /**
-     * in theory, this res.send() should be calling not only res.end, but
-     * also the functionality added to res.end by the logger middleware
-     * upon its instantiation
-     */
-    return res.send('done');
-});
+/**
+ * in theory, this res.send() should be calling not only res.end, but
+ * also the functionality added to res.end by the logger middleware
+ * upon its instantiation
+ */
+app.get('/', (req, res) => res.send('done'));
 
 // for manual middleware tests
 // app.listen(3001, () => {

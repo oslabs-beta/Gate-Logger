@@ -3,10 +3,10 @@ import request from 'supertest';
 
 import app from './server';
 
-// designed to mock the axios request made to the webapp to post a new query
-const mockAxios = {
-    post: jest.fn(() => Promise.resolve({ data: {} })),
-};
+// // designed to mock the axios request made to the webapp to post a new query
+// const mockAxios = {
+//     post: jest.fn(() => Promise.resolve({ data: {} })),
+// };
 
 /**
  *
