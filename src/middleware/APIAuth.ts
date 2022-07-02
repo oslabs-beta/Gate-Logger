@@ -47,6 +47,7 @@ export default class AuthVerification {
             .then((response) => {
                 if (response.status >= 400)
                     return new SyntaxError('[Log API] Invalid Gateway URL provided');
+                return response;
             })
             // throws error if server is not running
             .catch((err) => new Error(`[Log API] Server not running ${err}`));
