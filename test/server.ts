@@ -25,15 +25,16 @@ app.use((req, res, next) => {
 });
 
 /**
- * in theory, this res.send() should be calling not only res.end, but
- * also the functionality added to res.end by the logger middleware
- * upon its instantiation
+ * this res.end() is in place for ending the middleware chain
+ * and firing the event listener in gatelog's middleware callback.
+ * one a response is sent back to the client, the functionality
+ * within the event listener will execute
  */
 app.get('/', (req, res) => res.send('done'));
 
-// for manual middleware tests
-app.listen(3001, () => {
-    console.log('test server running');
-});
+// // for manual middleware tests
+// app.listen(3001, () => {
+//     console.log('test server running');
+// });
 
 export default app;

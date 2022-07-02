@@ -19,9 +19,12 @@ const gateURI = 'http://localhost:3000';
  * e.g. app.use(gatelog(params...))
  *      app.use(gatelimiter(params...))
  *
- * The gate log will be changing the definition of res.end (which is
- * called by res.json and res.send) to include the logger's functionality,
- * as well as the same functionality of res.end.
+ * The gate log adds functionality into a res.on('finish', ()=>{})
+ * event listener designed to fire once the response gets sent back to
+ * the client. This will make sure that the logger has now received data
+ * from the limiter regarding the current query, and now can send this data
+ * to the web app's backend.
+ *
  *
  * @param projectID points to the user's project in the webapp backend
  *
