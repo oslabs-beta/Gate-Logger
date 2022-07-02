@@ -29,4 +29,14 @@ describe('Logger End to End Test', () => {
                 });
         });
     });
+
+    describe('unsuccessful query', () => {
+        test('bad project ID passed into index', (done) => {});
+
+        test('bad api key passed into index', (done) => {});
+
+        test('bad mock query data passed into index', (done) => {});
+
+        test('web server is not up and running', (done) => {});
+    });
 });
