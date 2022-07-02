@@ -110,7 +110,7 @@ xdescribe('Test API key header verification', () => {
             );
         });
 
-        test('DB key received in fetch is correct length', async () => {
+        test('DB key received in fetch is incorrect length', async () => {
             await expect(verify).rejects.toThrow('[Log API] API key from DB is incorrect length.');
         });
 

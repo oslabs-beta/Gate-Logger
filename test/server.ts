@@ -2,8 +2,8 @@ import express from 'express';
 
 import gatelog from '../src/index';
 
-const MOCK_PROJECT_ID = '62bd14253f9bee60f2922c42';
-const MOCK_API_KEY = '6bxwViAIla';
+const MOCK_PROJECT_ID = '62be51413c529fd1f8927060';
+const MOCK_API_KEY = 'Knx897AkMs';
 
 const app = express();
 
@@ -32,8 +32,8 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => res.send('done'));
 
 // for manual middleware tests
-// app.listen(3001, () => {
-//     console.log('test server running');
-// });
+app.listen(3001, () => {
+    console.log('test server running');
+});
 
 export default app;

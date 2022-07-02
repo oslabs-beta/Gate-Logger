@@ -1,12 +1,11 @@
 import 'jest';
-import PostQuery from '../../src/middleware/PostQuery';
+import postQuery from '../../src/middleware/PostQuery';
 import { QueryData } from '../../@types/log';
 
 xdescribe('Test API key header verification', () => {
     let mockURI: string;
     let mockProjectID: string;
     let mockQueryData: QueryData;
-    let postQuery: PostQuery;
 
     beforeEach(() => {
         /* The mock data below is pulled from a personal development dB.
@@ -34,15 +33,13 @@ xdescribe('Test API key header verification', () => {
             success: true,
             loggedOn: 0,
         };
-        postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
-        const newPost = () => postQuery.post();
+        const newPost = () => postQuery(mockURI, mockProjectID, mockQueryData);
 
         await expect(newPost).rejects.toThrow(`[gatelog] Query data cannot be negative.`);
     });
 
     test('Error thrown when resulting projectID of query does not match the one entered', async () => {
-        postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
-        const newPost = () => postQuery.post();
+        const newPost = () => postQuery(mockURI, mockProjectID, mockQueryData);
 
         await expect(newPost).not.toThrow(
             `[gatelog] GraphQL error, resulting query's projectID does not match the one entered`
@@ -50,8 +47,7 @@ xdescribe('Test API key header verification', () => {
     });
 
     test('No error thrown when query data is correct syntax', async () => {
-        postQuery = new PostQuery(mockURI, mockProjectID, mockQueryData);
-        const newPost = () => postQuery.post();
+        const newPost = () => postQuery(mockURI, mockProjectID, mockQueryData);
 
         await expect(newPost).not.toThrow();
     });

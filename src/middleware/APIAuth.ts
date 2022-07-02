@@ -67,7 +67,7 @@ export default class AuthVerification {
         let dbKey: string | Error = '';
 
         // this endpoint returns the associated project's API key
-        await axios(`${this.gateURI}/auth/${this.projectID}`)
+        await axios(`${this.gateURI}/key/${this.projectID}`)
             // .then((data: any) => data?.json())
             .then((key: any): void => {
                 dbKey = key.data;

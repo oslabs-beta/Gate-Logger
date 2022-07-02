@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 import AuthVerification from './middleware/APIAuth';
-import PostQuery from './middleware/PostQuery';
+import postQuery from './middleware/PostQuery';
 
 // URI pointing to the visual webapp
 const gateURI = 'http://localhost:3000';
@@ -56,17 +56,12 @@ export default function gatelog(projectID: string, apiKey: string) {
             // stores time between request's beginning and end
             const latency: number = loggedOn - timestamp;
 
-            // passes into PostQuery class all query data along with recorded timestamp, loggedOn, and latency
-            const postQuery = new PostQuery(gateURI, projectID, {
+            await postQuery(gateURI, projectID, {
                 ...res.locals.graphqlGate,
                 timestamp,
                 loggedOn,
                 latency,
-            });
-
-            await postQuery
-                .post()
-                .catch((err) => console.log(`postQuery.post threw an error: ${err}`));
+            }).catch((err) => console.log(`postQuery.post threw an error: ${err}`));
         });
 
         return next();
