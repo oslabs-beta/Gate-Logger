@@ -34,20 +34,29 @@ const gateURI = 'http://localhost:3000';
  */
 
 // instantation, everything before the return callback runs only once
-export default async function gatelog(projectID: string, apiKey: string) {
+export default function gatelog(projectID: string, apiKey: string) {
     const newAuth = new AuthVerification(gateURI, projectID, apiKey);
 
     const validate = newAuth.validation;
     const verify = newAuth.verification;
 
     // run the API Key verification process when gatelog is instantiated
-    const isValidated: boolean | Error = await validate().catch((err) => err);
-    const isVerified: boolean | Error = await verify().catch((err) => err);
-
-    if (isValidated !== true || isVerified !== true)
-        return new SyntaxError(
-            `[gatelog] Error thrown dealing with the project ID and/or the API key entered\n`
-        );
+    validate()
+        .then((boolean) => {
+            if (!boolean)
+                throw new SyntaxError(
+                    `[gatelog] Error thrown dealing with the project ID and/or the API key entered\n`
+                );
+        })
+        .catch((err) => err);
+    verify()
+        .then((boolean) => {
+            if (!boolean)
+                throw new SyntaxError(
+                    `[gatelog] Error thrown dealing with the project ID and/or the API key entered\n`
+                );
+        })
+        .catch((err) => err);
 
     // every time a request is processed in the user's backend,
     // this express middleware callback will run
