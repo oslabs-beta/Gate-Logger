@@ -78,7 +78,7 @@ export default function gatelog(projectID: string, apiKey: string) {
                 timestamp,
                 loggedOn,
                 latency,
-            }).catch((err) => console.log(`postQuery.post threw an error: ${err}`));
+            }).catch((err) => new Error(`postQuery.post threw an error: ${err}`));
         });
 
         return next();
