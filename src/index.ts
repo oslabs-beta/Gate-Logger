@@ -67,18 +67,42 @@ export default function gatelog(projectID: string, apiKey: string) {
 
         // runs logger's functionality upon response being sent back to client
         res.on('finish', async (): Promise<void> => {
+            // checks if data from limiter middleware contains required properties,
+            // logs error otherwise to fail without crashing the server
+            if (
+                !(
+                    res.locals.graphqlGate?.hasOwnProperty('success') &&
+                    res.locals.graphqlGate?.hasOwnProperty('tokens')
+                )
+            ) {
+                console.log(
+                    new SyntaxError(
+                        `[gatelog] Error: Limiter is not including required query properties: success & tokens\n`
+                    )
+                );
+                return;
+            }
             // calls timestamp of request's end
             const loggedOn: number = new Date().valueOf();
 
             // stores time between request's beginning and end
             const latency: number = loggedOn - timestamp;
 
-            await postQuery(gateURI, projectID, {
+            const result = await postQuery(gateURI, projectID, {
                 ...res.locals.graphqlGate,
                 timestamp,
                 loggedOn,
                 latency,
-            }).catch((err) => new Error(`postQuery.post threw an error: ${err}`));
+            }).catch((err) => {
+                console.log(new Error(`postQuery.post threw an error: ${err}`));
+                return;
+            });
+
+            // returns Bad Request code if postQuery fails
+            if (result instanceof Error) {
+                console.log(new Error(`postQuery.post threw an error: ${result}`));
+                return;
+            }
         });
 
         return next();

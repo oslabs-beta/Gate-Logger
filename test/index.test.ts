@@ -1,12 +1,17 @@
 import 'jest';
 import request from 'supertest';
 
+import { LimQueryData } from '../@types/log';
+
 import app from './server';
 
-// // designed to mock the axios request made to the webapp to post a new query
-// const mockAxios = {
-//     post: jest.fn(() => Promise.resolve({ data: {} })),
-// };
+const currentTime: number = new Date().valueOf();
+
+const MOCK_QUERY_DATA: LimQueryData = {
+    complexity: Math.round(Math.random() * 10), // query cost
+    tokens: Math.round(Math.random() * 10), // tokens remaining
+    success: Math.random() < 0.5,
+};
 
 /**
  *
@@ -18,9 +23,13 @@ describe('Logger End to End Test', () => {
         test('Test API with middleware runs without errors', (done) => {
             // merely checks if test API can run the middleware without errors
             request(app)
-                .get('/')
+                .post('/')
+                .set('Content-type', 'application/json')
+                .send({
+                    mockQueryData: MOCK_QUERY_DATA,
+                })
                 .expect(200)
-                .expect('done')
+                .expect(MOCK_QUERY_DATA)
                 .end((err, res) => {
                     if (err) {
                         return err;
@@ -31,12 +40,50 @@ describe('Logger End to End Test', () => {
     });
 
     describe('unsuccessful query', () => {
-        test('bad project ID passed into index', (done) => {});
+        test('negative complexity passed into index', (done) => {
+            const badMockQueryData: LimQueryData = {
+                complexity: -1,
+                tokens: 2,
+                success: true,
+            };
+            let badData = {
+                mockQueryData: badMockQueryData,
+            };
 
-        test('bad api key passed into index', (done) => {});
+            request(app)
+                .post('/')
+                .set('Content-type', 'application/json')
+                .send(badData)
+                .end((err, res) => {
+                    if (err) {
+                        console.log(`Supertest error: ${err}`);
+                        return err;
+                    }
+                    return done();
+                });
+        });
 
-        test('bad mock query data passed into index', (done) => {});
+        test('query failure and complexity value passed into index', (done) => {
+            const badMockQueryData: LimQueryData = {
+                complexity: 2,
+                tokens: 2,
+                success: false,
+            };
+            let badData = {
+                mockQueryData: badMockQueryData,
+            };
 
-        test('web server is not up and running', (done) => {});
+            request(app)
+                .post('/')
+                .set('Content-type', 'application/json')
+                .send(badData)
+                .end((err, res) => {
+                    if (err) {
+                        console.log(`Supertest error: ${err}`);
+                        return err;
+                    }
+                    return done();
+                });
+        });
     });
 });

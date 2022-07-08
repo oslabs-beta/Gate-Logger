@@ -1,4 +1,5 @@
 import express from 'express';
+import bodyParser from 'body-parser';
 
 import gatelog from '../src/index';
 
@@ -10,17 +11,12 @@ const app = express();
 // logger middleware instantiation, changes res.end definition
 app.use(gatelog(MOCK_PROJECT_ID, MOCK_API_KEY));
 
+app.use(bodyParser.json());
+
 // mocking limiter middleware (to set res.locals.graphQLGate)
 // this is in the case that a query goes through successfully
 app.use((req, res, next) => {
-    const MOCK_QUERY_DATA = {
-        complexity: Math.round(Math.random() * 10), // query cost
-        tokens: Math.round(Math.random() * 10), // tokens remaining
-        success: Math.random() < 0.5,
-    };
-
-    res.locals.graphqlGate = MOCK_QUERY_DATA;
-
+    res.locals.graphqlGate = req.body.mockQueryData;
     return next();
 });
 
@@ -30,11 +26,13 @@ app.use((req, res, next) => {
  * one a response is sent back to the client, the functionality
  * within the event listener will execute
  */
-app.get('/', (req, res) => res.send('done'));
+app.use('/', (req, res) => {
+    res.send(req.body.mockQueryData);
+});
 
-// // for manual middleware tests
-// app.listen(3001, () => {
-//     console.log('test server running');
-// });
+// for manual middleware tests
+app.listen(3001, () => {
+    console.log('test server running');
+});
 
 export default app;
