@@ -41,22 +41,19 @@ export default function gatelog(projectID: string, apiKey: string) {
     const verify = newAuth.verification;
 
     // run the API Key verification process when gatelog is instantiated
-    validate()
-        .then((boolean) => {
-            if (!boolean)
-                throw new SyntaxError(
-                    `[gatelog] Error thrown dealing with the project ID and/or the API key entered\n`
-                );
+    Promise.all([validate, verify])
+        .then((values) => {
+            values.forEach((boolean) => {
+                if (!boolean) {
+                    throw new SyntaxError(
+                        `[gatelog] Error thrown dealing with the project ID and/or the API key entered\n`
+                    );
+                }
+            });
         })
-        .catch((err) => err);
-    verify()
-        .then((boolean) => {
-            if (!boolean)
-                throw new SyntaxError(
-                    `[gatelog] Error thrown dealing with the project ID and/or the API key entered\n`
-                );
-        })
-        .catch((err) => err);
+        .catch((err) =>
+            console.log(`[gatelog] Error validating/verifying projectID and/or API key`)
+        );
 
     // every time a request is processed in the user's backend,
     // this express middleware callback will run
