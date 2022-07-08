@@ -1,11 +1,11 @@
 import 'jest';
 import postQuery from '../../src/middleware/PostQuery';
-import { LimQueryData } from '../../@types/log';
+import { LogQueryData } from '../../@types/log';
 
-xdescribe('Test API key header verification', () => {
+describe('Test API key header verification', () => {
     let mockURI: string;
     let mockProjectID: string;
-    let mockQueryData: LimQueryData;
+    let mockQueryData: LogQueryData;
 
     beforeEach(() => {
         /* The mock data below is pulled from a personal development dB.
