@@ -61,11 +61,10 @@ export default async function postQuery(
     const result = await axios
         .post(`${gateURI}/gql`, data)
         .then((json) => json.data.data.createProjectQuery)
-        .catch((err: Error): Error => {
-            return new Error(
-                `[gatelog] Error posting project query\n${JSON.stringify(err, null, 2)}`
-            );
-        });
+        .catch(
+            (err: Error): Error =>
+                new Error(`[gatelog] Error posting project query\n${JSON.stringify(err, null, 2)}`)
+        );
 
     // check in place to make sure query is posted to the correct project,
     // fails without crashing the server

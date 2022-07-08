@@ -71,8 +71,11 @@ export default function gatelog(projectID: string, apiKey: string) {
             // logs error otherwise to fail without crashing the server
             if (
                 !(
+                    // prettier-ignore
+                    // eslint-disable-next-line no-prototype-builtins
                     res.locals.graphqlGate?.hasOwnProperty('success') &&
-                    res.locals.graphqlGate?.hasOwnProperty('tokens')
+                        // eslint-disable-next-line no-prototype-builtins
+                        res.locals.graphqlGate?.hasOwnProperty('tokens')
                 )
             ) {
                 console.log(
@@ -95,13 +98,11 @@ export default function gatelog(projectID: string, apiKey: string) {
                 latency,
             }).catch((err) => {
                 console.log(new Error(`postQuery.post threw an error: ${err}`));
-                return;
             });
 
             // returns Bad Request code if postQuery fails
             if (result instanceof Error) {
                 console.log(new Error(`postQuery.post threw an error: ${result}`));
-                return;
             }
         });
 

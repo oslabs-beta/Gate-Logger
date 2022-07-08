@@ -46,7 +46,7 @@ describe('Logger End to End Test', () => {
                 tokens: 2,
                 success: true,
             };
-            let badData = {
+            const badData = {
                 mockQueryData: badMockQueryData,
             };
 
@@ -69,7 +69,7 @@ describe('Logger End to End Test', () => {
                 tokens: 2,
                 success: false,
             };
-            let badData = {
+            const badData = {
                 mockQueryData: badMockQueryData,
             };
 
