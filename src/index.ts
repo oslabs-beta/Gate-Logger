@@ -43,13 +43,11 @@ export default function gatelog(projectID: string, apiKey: string) {
     // run the API Key verification process when gatelog is instantiated
     Promise.all([validate, verify])
         .then((values) => {
-            values.forEach((boolean) => {
-                if (!boolean) {
-                    throw new SyntaxError(
-                        `[gatelog] Error thrown dealing with the project ID and/or the API key entered\n`
-                    );
-                }
-            });
+            if (!values[0] || !values[1]) {
+                throw new SyntaxError(
+                    `[gatelog] Error thrown dealing with the project ID and/or the API key entered\n`
+                );
+            }
         })
         .catch((err) =>
             console.log(`[gatelog] Error validating/verifying projectID and/or API key`)
