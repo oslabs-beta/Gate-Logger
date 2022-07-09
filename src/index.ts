@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 
-// import AuthVerification from './middleware/AuthVerification';
-// import PostQuery from './middleware/PostQuery';
+import verification from './middleware/verify';
+import postQuery from './middleware/post';
 
 // URI pointing to the visual webapp
 const gateURI = 'http://localhost:3000';
 
 /**
- * @function gateLog runs along with the helper functions
+ * @function gatelog runs along with the helper functions
  * first, authorizes the user's request to post to the webapp
  * using params. This middleware should be called BEFORE the
  * rate-limiting middleware in order to log blocked requests &
@@ -19,9 +19,12 @@ const gateURI = 'http://localhost:3000';
  * e.g. app.use(gatelog(params...))
  *      app.use(gatelimiter(params...))
  *
- * The gate log will be changing the definition of res.end (which is
- * called by res.json and res.send) to include the logger's functionality,
- * as well as the same functionality of res.end.
+ * The gate log adds functionality into a res.on('finish', ()=>{})
+ * event listener designed to fire once the response gets sent back to
+ * the client. This will make sure that the logger has now received data
+ * from the limiter regarding the current query, and now can send this data
+ * to the web app's backend.
+ *
  *
  * @param projectID points to the user's project in the webapp backend
  *
@@ -29,32 +32,67 @@ const gateURI = 'http://localhost:3000';
  *               to the webapp's backend
  *
  */
+
 // instantation, everything before the return callback runs only once
 export default function gatelog(projectID: string, apiKey: string) {
-    // const newAuth = new AuthVerification(gateURI, projectID, apiKey);
+    verification(gateURI, projectID, apiKey)
+        .then((res) => {
+            if (res instanceof Error)
+                throw new SyntaxError(
+                    `[gatelog] Error with server, project ID, or API key:\n${res}`
+                );
+        })
+        .catch((err) => {
+            throw new Error(`[gatelog] Error verifying:\n${err}`);
+        });
 
-    // const validate = newAuth.endpointValidation(req, res, next);
-    // const verify = newAuth.keyVerification(req, res, next);
+    // every time a request is processed in the user's backend,
+    // this express middleware callback will run
+    return (req: Request, res: Response, next: NextFunction) => {
+        // calls initial timestamp of request's beginning,
+        // this will depend on where logger is placed in middleware chain
+        const timestamp: number = new Date().valueOf();
 
-    // run the API Key verification process when gateLogger is instantiated
-    try {
-        // await validate();
-        // await verify();
-    } catch (err) {
-        return err;
-    }
+        // runs logger's functionality upon response being sent back to client
+        res.on('finish', async (): Promise<void> => {
+            // checks if data from limiter middleware contains required properties,
+            // logs error otherwise to fail without crashing the server
+            if (
+                !(
+                    // prettier-ignore
+                    // eslint-disable-next-line no-prototype-builtins
+                    res.locals.graphqlGate?.hasOwnProperty('success') &&
+                        // eslint-disable-next-line no-prototype-builtins
+                        res.locals.graphqlGate?.hasOwnProperty('tokens')
+                )
+            ) {
+                console.log(
+                    new SyntaxError(
+                        `[gatelog] Error: Limiter is not including required query properties: success & tokens\n`
+                    )
+                );
+                return;
+            }
+            // calls timestamp of request's end
+            const loggedOn: number = new Date().valueOf();
 
-    // const postQuery = new PostQuery(gateURI, projectID);
+            // stores time between request's beginning and end
+            const latency: number = loggedOn - timestamp;
 
-    // every time a request is processed in the user's backend
-    return async (req: Request, res: Response, next: NextFunction) => {
-        // reassign res.end in order to allow logger functionality before
-        // a response is sent back the client
-        // eslint-disable-next-line arrow-body-style
-        res.end = () => {
-            // postQuery.post(req, res, next);
-            return res;
-        };
+            const result = await postQuery(gateURI, projectID, {
+                ...res.locals.graphqlGate,
+                timestamp,
+                loggedOn,
+                latency,
+            }).catch((err) => {
+                console.log(new Error(`postQuery.post threw an error: ${err}`));
+            });
+
+            // returns Bad Request code if postQuery fails
+            if (result instanceof Error) {
+                console.log(new Error(`postQuery.post threw an error: ${result}`));
+            }
+        });
 
         return next();
     };
