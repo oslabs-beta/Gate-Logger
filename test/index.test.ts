@@ -5,8 +5,6 @@ import { LimQueryData } from '../@types/log';
 
 import app from './server';
 
-const currentTime: number = new Date().valueOf();
-
 const MOCK_QUERY_DATA: LimQueryData = {
     complexity: Math.round(Math.random() * 10), // query cost
     tokens: Math.round(Math.random() * 10), // tokens remaining

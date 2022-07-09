@@ -25,8 +25,6 @@ describe('Test API key header verification', () => {
             success: true,
             loggedOn: 0,
         };
-
-        newPost = async () => await postQuery(mockURI, mockProjectID, mockQueryData);
     });
 
     test('error throws when query data is incorrect', () => {
@@ -38,13 +36,17 @@ describe('Test API key header verification', () => {
             loggedOn: 0,
         };
 
-        const newPost = async () => await postQuery(mockURI, mockProjectID, mockQueryData);
+        newPost = async () => {
+            await postQuery(mockURI, mockProjectID, mockQueryData);
+        };
 
         expect(newPost).rejects.toThrowError();
     });
 
     test('No error thrown when query data is correct syntax', () => {
-        const newPost = async () => await postQuery(mockURI, mockProjectID, mockQueryData);
+        newPost = async () => {
+            await postQuery(mockURI, mockProjectID, mockQueryData);
+        };
 
         expect(newPost).not.toThrow();
     });

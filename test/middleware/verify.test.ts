@@ -30,7 +30,7 @@ describe('API Verification', () => {
      */
 
     test('throws when invalid project ID is provided', () => {
-        const newVerification = async () => {
+        newVerification = async () => {
             await verification(MOCK_URI, 'error', MOCK_API_KEY);
         };
 
