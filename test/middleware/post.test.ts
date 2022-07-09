@@ -1,11 +1,13 @@
 import 'jest';
-import postQuery from '../../src/middleware/PostQuery';
+import postQuery from '../../src/middleware/post';
 import { LogQueryData } from '../../@types/log';
 
 describe('Test API key header verification', () => {
     let mockURI: string;
     let mockProjectID: string;
     let mockQueryData: LogQueryData;
+
+    let newPost: () => Promise<void | Error>;
 
     beforeEach(() => {
         /* The mock data below is pulled from a personal development dB.
@@ -23,9 +25,11 @@ describe('Test API key header verification', () => {
             success: true,
             loggedOn: 0,
         };
+
+        newPost = async () => await postQuery(mockURI, mockProjectID, mockQueryData);
     });
 
-    test('error throws when query data is incorrect', async () => {
+    test('error throws when query data is incorrect', () => {
         mockQueryData = {
             complexity: 3,
             timestamp: 100,
@@ -33,22 +37,15 @@ describe('Test API key header verification', () => {
             success: true,
             loggedOn: 0,
         };
-        const newPost = () => postQuery(mockURI, mockProjectID, mockQueryData);
 
-        await expect(newPost).rejects.toThrow(`[gatelog] Query data cannot be negative.`);
+        const newPost = async () => await postQuery(mockURI, mockProjectID, mockQueryData);
+
+        expect(newPost).rejects.toThrowError();
     });
 
-    test('Error thrown when resulting projectID of query does not match the one entered', async () => {
-        const newPost = () => postQuery(mockURI, mockProjectID, mockQueryData);
+    test('No error thrown when query data is correct syntax', () => {
+        const newPost = async () => await postQuery(mockURI, mockProjectID, mockQueryData);
 
-        await expect(newPost).not.toThrow(
-            `[gatelog] GraphQL error, resulting query's projectID does not match the one entered`
-        );
-    });
-
-    test('No error thrown when query data is correct syntax', async () => {
-        const newPost = () => postQuery(mockURI, mockProjectID, mockQueryData);
-
-        await expect(newPost).not.toThrow();
+        expect(newPost).not.toThrow();
     });
 });

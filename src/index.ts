@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
-import AuthVerification from './middleware/APIAuth';
-import postQuery from './middleware/PostQuery';
+import verification from './middleware/verify';
+import postQuery from './middleware/post';
 
 // URI pointing to the visual webapp
 const gateURI = 'http://localhost:3000';
@@ -35,23 +35,16 @@ const gateURI = 'http://localhost:3000';
 
 // instantation, everything before the return callback runs only once
 export default function gatelog(projectID: string, apiKey: string) {
-    const newAuth = new AuthVerification(gateURI, projectID, apiKey);
-
-    const validate = newAuth.validation;
-    const verify = newAuth.verification;
-
-    // run the API Key verification process when gatelog is instantiated
-    Promise.all([validate, verify])
-        .then((values) => {
-            if (!values[0] || !values[1]) {
+    verification(gateURI, projectID, apiKey)
+        .then((res) => {
+            if (res instanceof Error)
                 throw new SyntaxError(
-                    `[gatelog] Error thrown dealing with the project ID and/or the API key entered\n`
+                    `[gatelog] Error with server, project ID, or API key:\n${res}`
                 );
-            }
         })
-        .catch((err) =>
-            console.log(`[gatelog] Error validating/verifying projectID and/or API key`)
-        );
+        .catch((err) => {
+            throw new Error(`[gatelog] Error verifying:\n${err}`);
+        });
 
     // every time a request is processed in the user's backend,
     // this express middleware callback will run

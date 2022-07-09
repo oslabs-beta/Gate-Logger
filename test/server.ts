@@ -30,9 +30,9 @@ app.use('/', (req, res) => {
     res.send(req.body.mockQueryData);
 });
 
-// for manual middleware tests
-app.listen(3001, () => {
-    console.log('test server running');
-});
+// // for manual middleware tests
+// app.listen(3001, () => {
+//     console.log('test server running');
+// });
 
 export default app;
