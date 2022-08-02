@@ -16,7 +16,7 @@ This package intrefaces with the GraphQLGate rate-limiting package to log query 
 
 2. Create a new project to recieve a project ID and API key.
 
-3. Import and configure the [GraphQLGate rate-limiting package](https://www.npmjs.com/package/rate-limit-promise)
+3. Import and configure the [GraphQLGate rate-limiting package](https://www.npmjs.com/package/graphqlgate)
 
 ## <a name="getting-started"></a> Getting Started
 
