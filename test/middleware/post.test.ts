@@ -1,6 +1,7 @@
 import 'jest';
 import postQuery from '../../src/middleware/post';
 import { LogQueryData } from '../../@types/log';
+import { MOCK_URI, MOCK_PROJECT_ID } from '../mockConstants';
 
 xdescribe('Test API key header verification', () => {
     let mockURI: string;
@@ -16,8 +17,8 @@ xdescribe('Test API key header verification', () => {
        to the webapp project and create a mock project with the webapp,
        then change these values to match the new data.
        */
-        // mockURI = MOCK_URI;
-        // mockProjectID = MOCK_PROJECT_ID;
+        mockURI = MOCK_URI;
+        mockProjectID = MOCK_PROJECT_ID;
         mockQueryData = {
             complexity: 4,
             timestamp: Date.now(),
