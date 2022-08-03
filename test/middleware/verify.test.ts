@@ -2,15 +2,7 @@ import 'jest';
 
 import verification from '../../src/middleware/verify';
 
-/* The mock data below is pulled from a personal development dB.
-
-    To perform some of these tests yourself, you must connect your dB
-    to the webapp project and create a mock project with the webapp,
-    then change these values to match the new data.
-*/
-const MOCK_PROJECT_ID = '62be513b3c529fd1f8927058';
-const MOCK_API_KEY = 'KYNHLO1SCq';
-const MOCK_URI = 'http://localhost:3000';
+import { MOCK_API_KEY, MOCK_PROJECT_ID, MOCK_URI } from '../mockConstants';
 
 let newVerification: () => Promise<void | Error>;
 

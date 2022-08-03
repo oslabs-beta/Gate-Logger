@@ -16,8 +16,8 @@ xdescribe('Test API key header verification', () => {
        to the webapp project and create a mock project with the webapp,
        then change these values to match the new data.
        */
-        mockURI = 'http://localhost:3000';
-        mockProjectID = '62997af7a5aab6a6df935797';
+        // mockURI = MOCK_URI;
+        // mockProjectID = MOCK_PROJECT_ID;
         mockQueryData = {
             complexity: 4,
             timestamp: Date.now(),

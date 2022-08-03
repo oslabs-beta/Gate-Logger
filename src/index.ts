@@ -33,7 +33,7 @@ const gateURI = 'http://graphqlgate.io';
  */
 
 // instantation, everything before the return callback runs only once
-export default function gatelog(projectID: string, apiKey: string) {
+export default function gateLogger(projectID: string, apiKey: string) {
     verification(gateURI, projectID, apiKey)
         .then((res) => {
             if (res instanceof Error)
