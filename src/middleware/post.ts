@@ -75,7 +75,7 @@ export default async function postQuery(
 
     // check in place to make sure query is posted to the correct project,
     // fails without crashing the server
-    if (result.projectID !== projectID) {
+    if (result?.projectID !== projectID) {
         throw new Error(
             `[gatelog] GraphQL error, resulting query's projectID does not match the ID entered\n`
         );
