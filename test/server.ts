@@ -3,8 +3,7 @@ import bodyParser from 'body-parser';
 
 import gatelog from '../src/index';
 
-const MOCK_PROJECT_ID = '62be51413c529fd1f8927060';
-const MOCK_API_KEY = 'Knx897AkMs';
+import { MOCK_API_KEY, MOCK_PROJECT_ID } from './mockConstants';
 
 const app = express();
 
