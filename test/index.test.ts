@@ -16,7 +16,7 @@ const MOCK_QUERY_DATA: LimQueryData = {
  * TESTING SUITE
  *
  */
-describe('Logger End to End Test', () => {
+xdescribe('Logger End to End Test', () => {
     describe('successful query', () => {
         test('Test API with middleware runs without errors', (done) => {
             // merely checks if test API can run the middleware without errors

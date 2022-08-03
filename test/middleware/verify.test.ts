@@ -14,7 +14,7 @@ const MOCK_URI = 'http://localhost:3000';
 
 let newVerification: () => Promise<void | Error>;
 
-describe('API Verification', () => {
+xdescribe('API Verification', () => {
     beforeEach(async () => {
         newVerification = async () => {
             await verification(MOCK_URI, MOCK_PROJECT_ID, MOCK_API_KEY);
