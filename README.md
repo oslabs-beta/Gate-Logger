@@ -3,16 +3,22 @@
    <h1>Gate Logger</h1>
    <a href="https://github.com/oslabs-beta/Gate-Logger"><img src="https://img.shields.io/badge/license-MIT-blue"/></a> <a href="https://github.com/oslabs-beta/Gate-Logger/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/oslabs-beta/Gate-Logger"></a> <a             href="https://github.com/oslabs-beta/Gate-Logger/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/oslabs-beta/Gate-Logger"></a> <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/oslabs-beta/Gate-Logger">
 
-   <h3 align="center"> <strong>The data pipeline package for communication between your GraphQL Gate and your Gateway developer portal.</strong></h3>
+   <h3 align="center"> <strong>The data pipeline package for communication between the GraphQLGate Rate-Limiter and your Gateway developer portal.</strong></h3>
    </div>
    
 &nbsp;
 
+## <a name="prerequisites"></a> Prerequisites
+
+This package intrefaces with the GraphQLGate rate-limiting package to log query data for visualization in the Gateway developer portal
+
+1. Signup/login to the [Gateway developer portal](graphqlgate.io).
+
+2. Create a new project to recieve a project ID and API key.
+
+3. Import and configure the [GraphQLGate rate-limiting package](https://www.npmjs.com/package/graphqlgate)
+
 ## <a name="getting-started"></a> Getting Started
-
-Signup/login to the [Gateway developer portal](graphqlgate.io).
-
-Create a new project and copy the given project ID and API key.
 
 Install the package
 
@@ -24,7 +30,7 @@ Import the package and add the logging middleware to the Express middleware chai
 
 ** ERRORS WILL BE THROWN if the logger is added after the limiter **
 
-Copy the project ID and the API key from your project on the Gateway developer portal, and paste them into the middleware instantiation.
+Copy the project ID and the API key from your project on the Gateway developer portal and include them as middleware arguments.
 
 ```javascript
 // import package
@@ -38,7 +44,7 @@ import expressGraphQLRateLimiter from 'graphqlgate';
 // Add the logger middleware into your GraphQL middleware chain
 app.use('gql', gateLogger(/* PROJECT ID */, /* API KEY */ );
 
-//Add the rate limiter middleware
+//Add the rate limiteing middleware
 app.use(
     'gql',
     expressGraphQLRateLimiter(schemaObject, {
@@ -51,4 +57,4 @@ app.use(
 );
 ```
 
-And that's it! The logger will now send all queries and their associated data, blocked or allowed for you to view in the Gateway developer portal!
+And that's it! The logger will now send all query rate-limiting data, blocked or allowed, for you to view in the Gateway developer portal!
