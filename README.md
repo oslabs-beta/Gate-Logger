@@ -35,7 +35,7 @@ Copy the project ID and the API key from your project on the Gateway developer p
 ```javascript
 // import package
 import gateLogger from 'gate-logger';
-import expressGraphQLRateLimiter from 'graphqlgate';
+import { expressGraphQLRateLimiter } from 'graphql-limiter';
 
 /**
  * Import other dependencies
