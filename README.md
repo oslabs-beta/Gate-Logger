@@ -44,7 +44,7 @@ import { expressGraphQLRateLimiter } from 'graphql-limiter';
 // Add the logger middleware into your GraphQL middleware chain
 app.use('gql', gateLogger(/* PROJECT ID */, /* API KEY */ );
 
-//Add the rate limiteing middleware
+//Add the rate limiting middleware
 app.use(
     'gql',
     expressGraphQLRateLimiter(schemaObject, {
