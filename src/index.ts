@@ -82,6 +82,7 @@ export default function gateLogger(projectID: string, apiKey: string) {
 
             const result = await postQuery(gateURI, projectID, {
                 ...res.locals.graphqlGate,
+                requestIP: req.ip,
                 timestamp,
                 loggedOn,
                 latency,
