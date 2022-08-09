@@ -8,7 +8,7 @@ export default async function postQuery(
     queryData: LogQueryData
 ): Promise<void | Error> {
     // needs depth property once added into limiter functionality
-    const { complexity, tokens, success, timestamp, loggedOn, latency, requestIP } = queryData;
+    const { complexity, tokens, success, timestamp, loggedOn, latency, requestUuid } = queryData;
 
     // most likely redundant, in place for strange edge cases
     if (
@@ -31,7 +31,7 @@ export default async function postQuery(
 
     const variables = {
         projectQuery: {
-            requestIP,
+            requestUuid,
             projectID,
             complexity,
             depth,
@@ -47,7 +47,7 @@ export default async function postQuery(
     const query = `
         mutation CreateProjectQuery($projectQuery: CreateProjectQueryInput!) {
             createProjectQuery(projectQuery: $projectQuery) {
-                requestIP
+                requestUuid
                 projectID
                 complexity
                 depth
