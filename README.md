@@ -10,7 +10,7 @@
 
 ## <a name="prerequisites"></a> Prerequisites
 
-This package intrefaces with the GraphQLGate rate-limiting package to log query data for visualization in the Gateway developer portal
+This package interfaces with the GraphQLGate rate-limiting package to log query data for visualization in the Gateway developer portal
 
 1. Signup/login to the [Gateway developer portal](graphqlgate.io).
 
