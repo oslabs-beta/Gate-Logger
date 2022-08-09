@@ -4,8 +4,7 @@ import verification from './middleware/verify';
 import postQuery from './middleware/post';
 
 // URI pointing to the visual webapp
-const gateURI = 'http://localhost:3000';
-
+const gateURI = 'http://graphqlgate.io';
 /**
  * @function gatelog runs along with the helper functions
  * first, authorizes the user's request to post to the webapp

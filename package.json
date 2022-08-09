@@ -1,8 +1,9 @@
 {
     "name": "gate-logger",
     "version": "1.0.0",
-    "description": "A backend library to log GraphQL requests based on their depth and complexity.",
-    "main": "src/index.ts",
+    "description": "A backend library to log GraphQL query data to  Gateway developer portal",
+    "main": "./dist/src/index.js",
+    "types": "./dist/src/index.d.ts",
     "scripts": {
         "test": "jest -c ./jest.unit.json",
         "test:coverage": "jest --coverage -c ./jest.unit.json",
@@ -10,18 +11,29 @@
         "lint:fix": "eslint --fix src test",
         "prettier": "prettier --write .",
         "prepare": "husky install",
-        "test:server": "nodemon --exec ts-node --files ./test/server.ts"
+        "test:server": "nodemon --exec ts-node --files ./test/server.ts",
+        "build": "tsc",
+        "build:fix": "node node_modules/.bin/yab dist"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/oslabs-beta/beaver-logger.git"
+        "url": "git+https://github.com/oslabs-beta/gate-logger.git"
     },
-    "author": "",
+    "author": "Evan McNeely, Stephan Halarewicz, Flora Yufei Wu, Jon Dewey, Milos Popovic",
     "license": "ISC",
+    "keywords": [
+        "graphql",
+        "graphqlgate",
+        "rate-limiting",
+        "throttling",
+        "query",
+        "express",
+        "logger"
+    ],
     "bugs": {
-        "url": "https://github.com/oslabs-beta/beaver-logger/issues"
+        "url": "https://github.com/oslabs-beta/gate-logger/issues"
     },
-    "homepage": "https://github.com/oslabs-beta/beaver-logger#readme",
+    "homepage": "https://github.com/oslabs-beta/gate-logger#readme",
     "dependencies": {
         "axios": "^0.27.2",
         "body-parser": "^1.20.0",
@@ -36,6 +48,7 @@
         "@types/supertest": "^2.0.12",
         "@typescript-eslint/eslint-plugin": "^5.23.0",
         "@typescript-eslint/parser": "^5.23.0",
+        "add-js-extension": "^1.0.4",
         "eslint": "^8.15.0",
         "eslint-config-airbnb-base": "^15.0.0",
         "eslint-config-airbnb-typescript": "^17.0.0",
