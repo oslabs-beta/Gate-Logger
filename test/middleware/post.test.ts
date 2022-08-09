@@ -26,6 +26,7 @@ describe('Test API key header verification', () => {
             tokens: 8,
             success: true,
             loggedOn: 0,
+            requestUuid: '0.0.0.0',
         };
     });
 
@@ -36,6 +37,7 @@ describe('Test API key header verification', () => {
             tokens: -1,
             success: true,
             loggedOn: 0,
+            requestUuid: '0.0.0.0',
         };
 
         newPost = async () => {

@@ -17,4 +17,5 @@ export type LogQueryData = {
     timestamp: number;
     loggedOn: number;
     latency?: number;
+    requestUuid: string;
 };

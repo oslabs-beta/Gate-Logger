@@ -2,9 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 
 import verification from './middleware/verify';
 import postQuery from './middleware/post';
+import { MOCK_URI } from '../test/mockConstants';
 
 // URI pointing to the visual webapp
-const gateURI = 'http://localhost:3000';
+const gateURI = MOCK_URI;
 
 /**
  * @function gatelog runs along with the helper functions
@@ -81,6 +82,7 @@ export default function gateLogger(projectID: string, apiKey: string) {
 
             const result = await postQuery(gateURI, projectID, {
                 ...res.locals.graphqlGate,
+                requestUuid: req.ips ? req.ips[0] : req.ip,
                 timestamp,
                 loggedOn,
                 latency,
